@@ -3,51 +3,51 @@
 class Di {
 
     constructor() {
-        this._models = null;
-        this._api = null;
-        this._config = null;
-        this._logger = null;
-        this._db = null;
+        this.models = null;
+        this.api = null;
+        this.config = null;
+        this.logger = null;
+        this.db = null;
     }
 
     setDb(db) {
-        this._db = db;
+        this.db = db;
     }
 
     getDb() {
-        return this._db;
+        return this.db;
     }
 
     getModels() {
-        return this._models;
+        return this.models;
     }
 
     setModels(models) {
-        this._models = models;
+        this.models = models;
     }
 
     getApi() {
-        return this._api;
+        return this.api;
     }
 
     setApi(api) {
-        this._api = api;
+        this.api = api;
     }
 
     getConfig() {
-        return this._config;
+        return this.config;
     }
 
     setConfig(config) {
-        this._config = config;
+        this.config = config;
     }
 
     getLogger() {
-        return this._logger;
+        return this.logger;
     }
 
     setLogger(logger) {
-        this._logger = logger;
+        this.logger = logger;
     }
 
 }
