@@ -62,7 +62,7 @@ class Nedb {
                 data.expireAfterSeconds = options.expireAfterSeconds;
             }
 
-            this._nedb.ensureIndexes(data, (err) => {
+            this._nedb.ensureIndex(data, (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -87,6 +87,11 @@ class Nedb {
             this._nedb.insert(data, (err, doc) => {
 
                 if (err) {
+
+                    if (err.errorType && err.errorType == 'uniqueViolated') {
+                        err.code = 11000;
+                    }
+                    
                     reject(err);
                     return;
                 }

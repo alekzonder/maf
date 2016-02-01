@@ -6,7 +6,7 @@ class FindCursorChain {
         this._query = query;
         this._nedb = nedb;
 
-        this._fields = null;
+        this._fields = {};
         this._sort = null;
         this._limit = null;
         this._skip = null;
