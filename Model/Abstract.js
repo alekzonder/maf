@@ -153,8 +153,6 @@ class ModelAbstract {
             options.returnOriginal = false;
         }
 
-
-
         return new Promise((resolve, reject) => {
             this._collection.findOneAndUpdate(filter, update, options)
                 .then((data) => {
@@ -179,18 +177,17 @@ class ModelAbstract {
     findOne(query, options) {
         return new Promise((resolve, reject) => {
 
-            this._collection.findOne(query, options, (err, doc) => {
-                if (err) {
+            this._collection.findOne(query, options)
+                .then((doc) => {
+                    if (doc) {
+                        resolve(doc);
+                    } else {
+                        resolve(null);
+                    }
+                })
+                .catch((err) => {
                     reject(err);
-                    return;
-                }
-
-                if (doc) {
-                    resolve(doc);
-                } else {
-                    resolve(null);
-                }
-            });
+                });
         });
     }
 
@@ -202,20 +199,19 @@ class ModelAbstract {
      */
     findOneById(id) {
         return new Promise((resolve, reject) => {
-            this._collection.findOne({
-                _id: id
-            }, (err, doc) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
 
-                if (doc) {
-                    resolve(doc);
-                } else {
-                    resolve(null);
-                }
-            });
+            this._collection.findOne({_id: id})
+                .then((doc) => {
+                    if (doc) {
+                        resolve(doc);
+                    } else {
+                        resolve(null);
+                    }
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+
         });
     }
 
@@ -278,14 +274,13 @@ class ModelAbstract {
     updateOne(filters, data) {
 
         return new Promise((resolve, reject) => {
-            this._collection.update(filters, data, {}, (err, num) => {
-                if (err) {
+            this._collection.update(filters, data, {})
+                .then((num) => {
+                    resolve(data);
+                })
+                .catch((err) => {
                     reject(err);
-                    return;
-                }
-
-                resolve(data);
-            });
+                });
         });
     }
 
@@ -297,16 +292,17 @@ class ModelAbstract {
      * @return {Promise}
      */
     removeOne(filters) {
-        return new Promise((resolve, reject) => {
-            this._collection.remove(filters, {}, (err, count) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
 
-                resolve(count);
-            });
+        return new Promise((resolve, reject) => {
+            this._collection.remove(filters, {})
+                .then((count) => {
+                    resolve(count);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
+
     }
 
     /**
