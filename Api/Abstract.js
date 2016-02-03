@@ -28,7 +28,7 @@ class ApiAbstract {
     constructor(models, api) {
         this._models = models;
         this._api = api;
-        this._systemFeilds = null;
+        this._systemFields = null;
     }
 
     /**
@@ -105,11 +105,11 @@ class ApiAbstract {
 
     clearSystemFields(data) {
 
-        if (!this._systemFeilds) {
+        if (!this._systemFields) {
             return data;
         }
 
-        return _.omit(data, this._systemFeilds);
+        return _.omit(data, this._systemFields);
     }
 }
 
