@@ -29,6 +29,8 @@ class ApiAbstract {
         this._models = models;
         this._api = api;
         this._systemFields = null;
+
+        this.errorCodes = {};
     }
 
     /**
