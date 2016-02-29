@@ -1,6 +1,6 @@
 {
   "name":"maf",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "frmwrk",
   "main": "index.js",
   "repository": {
@@ -12,6 +12,7 @@
   "dependencies": {
     "fs-extra": "^0.26.5",
     "joi": "^7.2.1",
+    "joi-to-json-schema": "2.1.0",
     "lodash": "^4.1.0",
     "log4js": "^0.6.31"
   }
