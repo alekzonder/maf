@@ -92,7 +92,7 @@ class Rest {
                 }
 
                 if (methodData.prehook && typeof methodData.prehook == 'function') {
-                    methodData.prehook.call(methodData, di);
+                    methodData.prehook(methodData, di);
                 }
 
                 if (methodData.schema.path) {
@@ -203,6 +203,33 @@ class Rest {
             });
 
             resolve();
+
+        });
+    }
+
+    /**
+     * add resources
+     *
+     * @param {Array} resources
+     * @param {maf/Di} di
+     * @return {Promise}
+     */
+    addMany(resources, di) {
+        return new Promise((resolve, reject) => {
+
+            var promises = [];
+
+            _.each(resources, (resource) => {
+                promises.push(this.add(resource, di));
+            });
+
+            Promise.all(promises)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
 
         });
     }
