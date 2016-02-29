@@ -32,9 +32,10 @@ class Rest {
      * add new resource
      *
      * @param {Object} resource
+     * @param {maf/Di} di
      * @return {Promise}
      */
-    add(resource) {
+    add(resource, di) {
 
         return new Promise((resolve, reject) => {
 
@@ -86,11 +87,19 @@ class Rest {
                     title: methodData.title
                 };
 
-                if (methodData.schema && methodData.schema.path) {
+                if (typeof methodData.schema == 'undefined') {
+                    methodData.schema = {};
+                }
+
+                if (methodData.prehook && typeof methodData.prehook == 'function') {
+                    methodData.prehook.call(methodData, di);
+                }
+
+                if (methodData.schema.path) {
                     methodOptionsResponse.path_vars = joiToJsonSchema(joi.object().keys(methodData.schema.path));
                 }
 
-                if (methodData.schema && methodData.schema.query) {
+                if (methodData.schema.query) {
                     routeArgs.push((req, res, next) => {
 
                         var joiOptions = {
