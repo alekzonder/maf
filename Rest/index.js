@@ -49,10 +49,14 @@ class Rest {
                 return;
             }
 
+            if (!resource.title) {
+                resource.title = '-';
+            }
+
             var resourceUrl = this._getResourceUrl(resource.resource);
 
             this._globalOptionsResponse.resources.push({
-                resource: resourceUrl,
+                resource: resource.resource,
                 title: resource.title
             });
 
