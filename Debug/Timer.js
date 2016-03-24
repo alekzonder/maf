@@ -20,6 +20,8 @@ class DebugTimer {
         if (name) {
             this._data.name = name;
         }
+
+        this._stopCallback = null;
     }
 
     get type() {
@@ -51,11 +53,21 @@ class DebugTimer {
             sec: (new Date().getTime()) - this._start
         };
 
-        return this.toJSON();
+        var data = this.toJSON();
+
+        if (this._stopCallback) {
+            this._stopCallback(data);
+        }
+
+        return data;
     }
 
     toJSON() {
         return this._data;
+    }
+
+    onStop(callback) {
+        this._stopCallback = callback;
     }
 
 }

@@ -252,7 +252,7 @@ class ModelAbstract {
 
             return new Promise((resolve, reject) => {
 
-                this._logDebug(timer.stop());
+                timer.stop();
 
                 Promise.all([cursor.count(), cursor.toArray()])
                     .then((data) => {
@@ -363,7 +363,13 @@ class ModelAbstract {
     }
 
     _createTimer(name) {
-        return new DebugTimer('mongo', name);
+        var timer = new DebugTimer('mongo', name);
+
+        timer.onStop((data) => {
+            this._logDebug(data);
+        });
+
+        return timer;
     }
 
 
