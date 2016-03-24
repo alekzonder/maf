@@ -114,11 +114,10 @@ class Rest {
 
                         var querySchema = methodData.schema.query;
 
-                        querySchema.debug = joi.any();
-
                         joi.validate(req.query, querySchema, joiOptions, (err, data) => {
 
                             if (err) {
+
                                 var list = [];
 
                                 _.each(err.details, function(e) {
@@ -137,7 +136,7 @@ class Rest {
                                 e.status = 400;
                                 e.list = list;
 
-                                res.badRequest(e);
+                                res.sendCtxNow().badRequest(e);
                                 return;
                             }
 
@@ -160,8 +159,6 @@ class Rest {
 
                         var bodySchema = methodData.schema.body;
 
-                        bodySchema.debug = joi.any();
-
                         joi.validate(req.body, bodySchema, joiOptions, (err, data) => {
 
                             if (err) {
@@ -183,7 +180,7 @@ class Rest {
                                 e.status = 400;
                                 e.list = list;
 
-                                res.badRequest(e);
+                                res.sendCtxNow().badRequest(e);
                                 return;
                             }
 
@@ -195,7 +192,15 @@ class Rest {
                     methodOptionsResponse.request = joiToJsonSchema(joi.object().keys(methodData.schema.body));
                 }
 
-                routeArgs.push(methodData.callback);
+                routeArgs.push((req, res, next) => {
+
+                    res.ctxDone = () => {
+                        next();
+                    };
+
+                    methodData.callback(req, res);
+
+                });
 
                 this._app[lcMethod].apply(this._app, routeArgs);
 

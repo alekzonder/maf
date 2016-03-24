@@ -1,54 +1,72 @@
 'use strict';
 
+// var RequestDi = require('./Request/Di');
+
 class Di {
 
     constructor() {
-        this.models = null;
-        this.api = null;
-        this.config = null;
-        this.logger = null;
-        this.db = null;
+        this._config = null;
+        this._logger = null;
+
+        this._models = null;
+        this._api = null;
+
+        this._debug = null;
+
+        this._connections = {};
     }
 
-    setDb(db) {
-        this.db = db;
+    get config() {
+        return this._config;
     }
 
-    getDb() {
-        return this.db;
+    set config (v) {
+        this._config = v;
     }
 
-    getModels() {
-        return this.models;
+    get logger() {
+        return this._logger;
     }
 
-    setModels(models) {
-        this.models = models;
+    set logger(logger) {
+        this._logger = logger;
     }
 
-    getApi() {
-        return this.api;
+    get models() {
+        return this._models;
     }
 
-    setApi(api) {
-        this.api = api;
+    set models(models) {
+        this._models = models;
     }
 
-    getConfig() {
-        return this.config;
+    get api() {
+        return this._api;
     }
 
-    setConfig(config) {
-        this.config = config;
+    set api(api) {
+        this._api = api;
     }
 
-    getLogger() {
-        return this.logger;
+    get debug() {
+        return this._debug;
     }
 
-    setLogger(logger) {
-        this.logger = logger;
+    set debug(debug) {
+        this._debug = debug;
     }
+
+    setConnection(name, connection) {
+        this._connections[name] = connection;
+    }
+
+    getConnection(name) {
+        return this._connections[name];
+    }
+
+    // createDebugDi(requestId) {
+        // return new RequestDi(this, requestId);
+    // }
 
 }
 

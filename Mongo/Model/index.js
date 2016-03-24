@@ -4,6 +4,10 @@ var ModelError = require('./Error');
 var ModelErrorCodes = require('./ErrorCodes');
 var _ = require('lodash');
 
+var FindCursorChain = require('./FindCursorChain');
+
+var DebugTimer = require('../../Debug/Timer');
+
 /**
  * @class
  * @abstract
@@ -19,6 +23,17 @@ class ModelAbstract {
         this._collectionName = null;
         this._indexes = null;
         this._collection = null;
+
+        this._debugger = null;
+    }
+
+    /**
+     * set debugger object
+     *
+     * @param {Request/Debug} debugger
+     */
+    setDebugger(__debugger) {
+        this._debugger = __debugger;
     }
 
     /**
@@ -42,7 +57,7 @@ class ModelAbstract {
         return this;
     }
 
-    ensureIndexes() {
+    ensureIndexes(options) {
 
         return new Promise((resolve, reject) => {
 
@@ -103,7 +118,7 @@ class ModelAbstract {
      * @param  {Object} data
      * @return {Promise}
      */
-    insertOne(data) {
+    insertOne(data, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -197,7 +212,7 @@ class ModelAbstract {
      * @param  {String} id
      * @return {Promise}
      */
-    findOneById(id) {
+    findOneById(id, options) {
         return new Promise((resolve, reject) => {
 
             this._collection.findOne({_id: id})
@@ -225,43 +240,38 @@ class ModelAbstract {
      * @param  {Number} offset
      * @return {Promise}
      */
-    find(filter, fields, sort, limit, offset) {
+    find(filter, fields, sort, limit, offset, options) {
 
-        return new Promise((resolve, reject) => {
+        var timer = this._createTimer('find');
 
-            var cursor = this._collection.find(filter);
+        var chain = new FindCursorChain(this._collection, filter, fields);
 
-            if (fields) {
-                cursor.project(fields);
-            }
+        chain.onExec((cursor, debugMessage) => {
 
-            if (sort) {
-                cursor.sort(sort);
-            }
+            timer.message = debugMessage;
 
-            if (limit) {
-                cursor.limit(limit);
-            }
+            return new Promise((resolve, reject) => {
 
-            if (offset) {
-                cursor.skip(offset);
-            }
+                this._logDebug(timer.stop());
 
-            Promise.all([cursor.count(), cursor.toArray()])
-                .then((data) => {
+                Promise.all([cursor.count(), cursor.toArray()])
+                    .then((data) => {
 
-                    resolve({
-                        total: data[0],
-                        docs: data[1]
+                        resolve({
+                            total: data[0],
+                            docs: data[1]
+                        });
+
+                    })
+                    .catch((error) => {
+                        reject(error);
                     });
 
-                })
-                .catch((error) => {
-                    reject(error);
-                });
+            });
 
         });
 
+        return chain;
     }
 
     /**
@@ -271,7 +281,7 @@ class ModelAbstract {
      * @param  {Object} data
      * @return {Promise}
      */
-    updateOne(filters, data) {
+    updateOne(filters, data, options) {
 
         return new Promise((resolve, reject) => {
             this._collection.update(filters, data, {})
@@ -291,7 +301,7 @@ class ModelAbstract {
      * @param  {Object} filters
      * @return {Promise}
      */
-    removeOne(filters) {
+    removeOne(filters, options) {
 
         return new Promise((resolve, reject) => {
             this._collection.remove(filters, {})
@@ -311,7 +321,7 @@ class ModelAbstract {
      * @param  {Object} filters
      * @return {Promise}
      */
-    count(filters) {
+    count(filters, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -338,7 +348,25 @@ class ModelAbstract {
         return this._collection.aggregate(pipeline, options);
     }
 
-}
+    /**
+     * emit debug data
+     *
+     * @param  {Object} data
+     */
+    _logDebug(data) {
 
+        if (!this._debugger || !this._debugger.log) {
+            return;
+        }
+
+        this._debugger.log(data);
+    }
+
+    _createTimer(name) {
+        return new DebugTimer('mongo', name);
+    }
+
+
+}
 
 module.exports = ModelAbstract;
