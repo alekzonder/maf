@@ -62,6 +62,12 @@ class DebugTimer {
         return data;
     }
 
+    error(error) {
+        this._data.error = error;
+
+        this.stop();
+    }
+
     toJSON() {
         return this._data;
     }

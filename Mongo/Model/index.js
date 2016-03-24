@@ -122,12 +122,18 @@ class ModelAbstract {
 
         return new Promise((resolve, reject) => {
 
+            var timer = this._createTimer('insertOne');
+
             if (data.id) {
                 data._id = data.id;
             }
 
+            timer.message = `db.${this._collectionName}.insert(${this._json(data)})`;
+
             this._collection.insertOne(data)
                 .then((result) => {
+                    timer.stop();
+
                     if (result.ops && result.ops[0]) {
                         resolve(result.ops[0]);
                     } else {
@@ -148,6 +154,8 @@ class ModelAbstract {
                             e = error;
                         }
 
+                        timer.error(e.message);
+
                         reject(e);
                         return;
                     }
@@ -156,7 +164,16 @@ class ModelAbstract {
         });
     }
 
+    /**
+     * findOneAndUpdate
+     * @param  {[type]} filter  [description]
+     * @param  {[type]} update  [description]
+     * @param  {[type]} options [description]
+     * @return {[type]}         [description]
+     */
     findOneAndUpdate(filter, update, options) {
+
+        var timer = this._createTimer('findOneAndUpdate');
 
         if (!options) {
 
@@ -168,12 +185,17 @@ class ModelAbstract {
             options.returnOriginal = false;
         }
 
+        timer.message = `filter=${this._json(filter)} update=${this._json(update)} options=${this._json(options)}`;
+
         return new Promise((resolve, reject) => {
             this._collection.findOneAndUpdate(filter, update, options)
                 .then((data) => {
+                    timer.stop();
+
                     resolve(data);
                 })
                 .catch((error) => {
+                    timer.error(error.message);
                     reject(error);
                 });
         });
@@ -192,16 +214,21 @@ class ModelAbstract {
     findOne(query, options) {
         return new Promise((resolve, reject) => {
 
+            var timer = this._createTimer('findOne');
+            timer.message = `query=${this._json(query)} options=${this._json(options)}`;
+
             this._collection.findOne(query, options)
                 .then((doc) => {
+                    timer.stop();
                     if (doc) {
                         resolve(doc);
                     } else {
                         resolve(null);
                     }
                 })
-                .catch((err) => {
-                    reject(err);
+                .catch((error) => {
+                    timer.error(error.message);
+                    reject(error);
                 });
         });
     }
@@ -215,16 +242,22 @@ class ModelAbstract {
     findOneById(id, options) {
         return new Promise((resolve, reject) => {
 
+            var timer = this._createTimer('findOneById');
+            timer.message = `id=${this._json(id)} options=${this._json(options)}`;
+
             this._collection.findOne({_id: id})
                 .then((doc) => {
+                    timer.stop();
+
                     if (doc) {
                         resolve(doc);
                     } else {
                         resolve(null);
                     }
                 })
-                .catch((err) => {
-                    reject(err);
+                .catch((error) => {
+                    timer.error(error.message);
+                    reject(error);
                 });
 
         });
@@ -264,6 +297,7 @@ class ModelAbstract {
 
                     })
                     .catch((error) => {
+                        timer.error(error.message);
                         reject(error);
                     });
 
@@ -277,19 +311,25 @@ class ModelAbstract {
     /**
      * update one
      *
-     * @param  {Object} filters
+     * @param  {Object} filter
      * @param  {Object} data
      * @return {Promise}
      */
-    updateOne(filters, data, options) {
+    updateOne(filter, data, options) {
 
         return new Promise((resolve, reject) => {
-            this._collection.update(filters, data, {})
+
+            var timer = this._createTimer('updateOne');
+            timer.message = `filter=${this._json(filter)} data=${this._json(data)} options=${this._json(options)}`;
+
+            this._collection.update(filter, data, {})
                 .then((num) => {
+                    timer.stop();
                     resolve(data);
                 })
-                .catch((err) => {
-                    reject(err);
+                .catch((error) => {
+                    timer.error(error.message);
+                    reject(error);
                 });
         });
     }
@@ -298,18 +338,24 @@ class ModelAbstract {
     /**
      * remove one
      *
-     * @param  {Object} filters
+     * @param  {Object} filter
+     * @param {Object} options
+     *
      * @return {Promise}
      */
-    removeOne(filters, options) {
+    removeOne(filter, options) {
+        var timer = this._createTimer('findOne');
+        timer.message = `filter=${this._json(filter)} options=${this._json(options)}`;
 
         return new Promise((resolve, reject) => {
-            this._collection.remove(filters, {})
+            this._collection.remove(filter, {})
                 .then((count) => {
+                    timer.stop();
                     resolve(count);
                 })
-                .catch((err) => {
-                    reject(err);
+                .catch((error) => {
+                    timer.error(error.message);
+                    reject(error);
                 });
         });
 
@@ -318,18 +364,23 @@ class ModelAbstract {
     /**
      * get cound by filters
      *
-     * @param  {Object} filters
+     * @param  {Object} filter
+     * @param  {Object} options
      * @return {Promise}
      */
-    count(filters, options) {
+    count(filter, options) {
+        var timer = this._createTimer('count');
+        timer.message = `filter=${this._json(filter)} options=${this._json(options)}`;
 
         return new Promise((resolve, reject) => {
 
-            this._collection.count(filters)
+            this._collection.count(filter)
                 .then((data) => {
+                    timer.stop();
                     resolve(data);
                 })
                 .catch((error) => {
+                    timer.error(error.message);
                     reject(error);
                 });
 
@@ -345,6 +396,9 @@ class ModelAbstract {
      * @return {AggregationCursor}
      */
     aggregate(pipeline, options) {
+        var timer = this._createTimer('aggregate');
+        timer.message = `pipeline=${this._json(pipeline)} options=${this._json(options)}`;
+        timer.stop();
         return this._collection.aggregate(pipeline, options);
     }
 
@@ -362,6 +416,12 @@ class ModelAbstract {
         this._debugger.log(data);
     }
 
+    /**
+     * create debug timer
+     *
+     * @param  {String} name
+     * @return {DebugTimer}
+     */
     _createTimer(name) {
         var timer = new DebugTimer('mongo', name);
 
@@ -370,6 +430,16 @@ class ModelAbstract {
         });
 
         return timer;
+    }
+
+    /**
+     * json helper
+     *
+     * @param  {Object} data
+     * @return {String}
+     */
+    _json(data) {
+        return JSON.stringify(data);
     }
 
 
