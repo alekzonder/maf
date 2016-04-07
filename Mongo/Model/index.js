@@ -185,7 +185,7 @@ class ModelAbstract {
             options.returnOriginal = false;
         }
 
-        timer.message = `filter=${this._json(filter)} update=${this._json(update)} options=${this._json(options)}`;
+        timer.message = `db.${this._collectionName} filter=${this._json(filter)} update=${this._json(update)} options=${this._json(options)}`;
 
         return new Promise((resolve, reject) => {
             this._collection.findOneAndUpdate(filter, update, options)
@@ -215,7 +215,7 @@ class ModelAbstract {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOne');
-            timer.message = `query=${this._json(query)} options=${this._json(options)}`;
+            timer.message = `db.${this._collectionName} query=${this._json(query)} options=${this._json(options)}`;
 
             this._collection.findOne(query, options)
                 .then((doc) => {
@@ -243,7 +243,7 @@ class ModelAbstract {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOneById');
-            timer.message = `id=${this._json(id)} options=${this._json(options)}`;
+            timer.message = `db.${this._collectionName} id=${this._json(id)} options=${this._json(options)}`;
 
             this._collection.findOne({_id: id})
                 .then((doc) => {
@@ -320,7 +320,7 @@ class ModelAbstract {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('updateOne');
-            timer.message = `filter=${this._json(filter)} data=${this._json(data)} options=${this._json(options)}`;
+            timer.message = `db.${this._collectionName} filter=${this._json(filter)} data=${this._json(data)} options=${this._json(options)}`;
 
             this._collection.update(filter, data, {})
                 .then((num) => {
@@ -345,7 +345,7 @@ class ModelAbstract {
      */
     removeOne(filter, options) {
         var timer = this._createTimer('findOne');
-        timer.message = `filter=${this._json(filter)} options=${this._json(options)}`;
+        timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
         return new Promise((resolve, reject) => {
             this._collection.remove(filter, {})
@@ -370,7 +370,7 @@ class ModelAbstract {
      */
     count(filter, options) {
         var timer = this._createTimer('count');
-        timer.message = `filter=${this._json(filter)} options=${this._json(options)}`;
+        timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
         return new Promise((resolve, reject) => {
 
@@ -397,7 +397,7 @@ class ModelAbstract {
      */
     aggregate(pipeline, options) {
         var timer = this._createTimer('aggregate');
-        timer.message = `pipeline=${this._json(pipeline)} options=${this._json(options)}`;
+        timer.message = `db.${this._collectionName} pipeline=${this._json(pipeline)} options=${this._json(options)}`;
         timer.stop();
         return this._collection.aggregate(pipeline, options);
     }

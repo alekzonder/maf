@@ -1,6 +1,5 @@
 'use strict';
 
-
 class DebugTimer {
 
     constructor(type, name) {
@@ -45,12 +44,19 @@ class DebugTimer {
     }
 
     set message(message) {
+        if (typeof message == 'object') {
+            message = JSON.stringify(message);
+        }
+
         this._data.message = message;
     }
 
     stop() {
+        var msec = (new Date().getTime()) - this._start;
+
         this._data.time = {
-            sec: (new Date().getTime()) - this._start
+            sec: msec / 1000,
+            msec: msec
         };
 
         var data = this.toJSON();
@@ -75,8 +81,6 @@ class DebugTimer {
     onStop(callback) {
         this._stopCallback = callback;
     }
-
 }
-
 
 module.exports = DebugTimer;

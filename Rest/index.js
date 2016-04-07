@@ -26,6 +26,13 @@ class Rest {
             description: this._config.description,
             resources: []
         };
+
+        this._middlewares = [];
+    }
+
+    addMiddleware(middleware) {
+        // TODO check
+        this._middlewares.push(middleware);
     }
 
     /**
@@ -87,6 +94,11 @@ class Rest {
 
                 routeArgs.push(resourceUrl);
 
+                routeArgs.push((req, res, next) => {
+                    req.rest = methodData;
+                    next();
+                });
+
                 var methodOptionsResponse = {
                     title: methodData.title
                 };
@@ -99,11 +111,39 @@ class Rest {
                     methodData.prehook(methodData, di);
                 }
 
+                var middlewares = {
+                    afterSchemaCheck: []
+                };
+
+                var middlewaresAfterSchemaCheck = [];
+
+                if (this._middlewares) {
+
+                    _.each(this._middlewares, (middleware) => {
+
+                        if (['afterSchemaCheck'].indexOf(middleware.position) == -1) {
+                            var e = new Error(
+                                `unknown maf/Rest middleware position: ${middleware.position}`
+                            );
+
+                            this._logger.fatal(e);
+                            return reject(e);
+                        }
+
+                        if (middleware.check(methodData)) {
+                            methodData = middleware.prepare(method, methodData);
+                            middlewares[middleware.position].push(middleware.middleware);
+                        }
+
+                    });
+                }
+
                 if (methodData.schema.path) {
                     methodOptionsResponse.path_vars = joiToJsonSchema(joi.object().keys(methodData.schema.path));
                 }
 
                 if (methodData.schema.query) {
+
                     routeArgs.push((req, res, next) => {
 
                         var joiOptions = {
@@ -146,6 +186,7 @@ class Rest {
                     });
 
                     methodOptionsResponse.request = joiToJsonSchema(joi.object().keys(methodData.schema.query));
+
                 }
 
                 if (methodData.schema && methodData.schema.body) {
@@ -191,6 +232,16 @@ class Rest {
 
                     methodOptionsResponse.request = joiToJsonSchema(joi.object().keys(methodData.schema.body));
                 }
+
+
+                if (middlewares.afterSchemaCheck.length) {
+
+                    _.each(middlewares.afterSchemaCheck, (m) => {
+                        routeArgs.push(m);
+                    });
+
+                }
+
 
                 routeArgs.push((req, res, next) => {
 

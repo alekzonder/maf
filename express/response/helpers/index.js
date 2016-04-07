@@ -109,6 +109,27 @@ module.exports = function(options) {
             }
         };
 
+        res.forbidden = function (message, code) {
+            message = (message) ? message : 'Forbidden';
+            code = (code) ? code : 'forbidden';
+
+            this.ctx = {
+                status: 403,
+                body: {
+                    error: {
+                        message: message,
+                        code: code
+                    }
+                }
+            };
+
+            if (this.sendCtxImmediately) {
+                this.sendCtx();
+            } else {
+                this.ctxDone();
+            }
+        };
+
         res.sendCtxNow = function () {
             this.sendCtxImmediately = true;
             return this;

@@ -1,5 +1,5 @@
 {
-  "name":"maf",
+  "name": "maf",
   "version": "0.2.0",
   "description": "frmwrk",
   "main": "index.js",
@@ -10,11 +10,12 @@
   "author": "alekzonder <alekzonder@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^0.26.5",
-    "joi": "^7.2.1",
+    "fs-extra": "0.26.7",
+    "joi": "8.0.5",
     "joi-to-json-schema": "2.1.0",
-    "lodash": "^4.1.0",
-    "log4js": "^0.6.31",
-    "uuid": "^2.0.1"
+    "lodash": "4.6.1",
+    "log4js": "0.6.33",
+    "superagent": "1.8.3",
+    "uuid": "2.0.1"
   }
 }
