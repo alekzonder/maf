@@ -69,7 +69,23 @@ class DebugTimer {
     }
 
     error(error) {
-        this._data.error = error;
+        if (error.message) {
+
+            this._data.error = {
+                message: error.message
+            };
+
+            if (error.code) {
+                this._data.error.code = error.code;
+            }
+
+            if (error.entity) {
+                this._data.error.entity = error.entity;
+            }
+
+        } else {
+            this._data.error = error;
+        }
 
         this.stop();
     }

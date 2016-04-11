@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = function(options) {
 
     var continueRequestProcessing = false;
@@ -10,7 +12,9 @@ module.exports = function(options) {
 
         res.sendCtxImmediately = continueRequestProcessing;
 
-        res.serverError = function() {
+        var helpers = {};
+
+        helpers.serverError = function() {
 
             this.ctx = {
                 status: 500,
@@ -30,7 +34,14 @@ module.exports = function(options) {
 
         };
 
-        res.notFound = function(message, code) {
+        helpers.notFound = function(message, code, entity) {
+
+            if (message instanceof Error) {
+                var error = message;
+                message = error.message;
+                code = error.code;
+                entity = error.entity;
+            }
 
             this.ctx = {
                 status: 404,
@@ -42,6 +53,10 @@ module.exports = function(options) {
                 }
             };
 
+            if (entity) {
+                this.ctx.body.error.entity = entity;
+            }
+
             if (this.sendCtxImmediately) {
                 this.sendCtx();
             } else {
@@ -50,7 +65,7 @@ module.exports = function(options) {
 
         };
 
-        res.result = function(data, metadata) {
+        helpers.result = function(data, metadata) {
 
             var response = {};
 
@@ -73,7 +88,7 @@ module.exports = function(options) {
 
         };
 
-        res.badRequest = function(error) {
+        helpers.badRequest = function(error) {
 
             var message = 'Bad Request';
             var code = null;
@@ -102,6 +117,10 @@ module.exports = function(options) {
                 }
             };
 
+            if (error.entity) {
+                this.ctx.body.error.entity = error.entity;
+            }
+
             if (this.sendCtxImmediately) {
                 this.sendCtx();
             } else {
@@ -109,7 +128,16 @@ module.exports = function(options) {
             }
         };
 
-        res.forbidden = function (message, code) {
+        helpers.forbidden = function (message, code, entity) {
+
+            if (message instanceof Error) {
+                var error = message;
+
+                message = error.message;
+                code = error.code;
+                entity = error.entity;
+            }
+
             message = (message) ? message : 'Forbidden';
             code = (code) ? code : 'forbidden';
 
@@ -123,12 +151,21 @@ module.exports = function(options) {
                 }
             };
 
+            if (entity) {
+                this.ctx.body.error.entity = entity;
+            }
+
             if (this.sendCtxImmediately) {
                 this.sendCtx();
             } else {
                 this.ctxDone();
             }
         };
+
+        // binding helpers to res object
+        _.each(helpers, (helper, name) => {
+            res[name] = _.bind(helper, res);
+        });
 
         res.sendCtxNow = function () {
             this.sendCtxImmediately = true;

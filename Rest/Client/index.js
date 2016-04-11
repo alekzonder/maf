@@ -3,6 +3,8 @@
 var request = require('superagent');
 var DebugTimer = require('../../Debug/Timer');
 
+var RestApiClientError = require('./Error');
+
 class RestApiClient {
 
     constructor() {
@@ -33,8 +35,11 @@ class RestApiClient {
 
             r.end((err, res) => {
                 if (err) {
-                    timer.error(err.message);
-                    reject(err);
+                    var e = this._processError(err);
+
+                    timer.error(e);
+                    reject(e);
+
                     return;
                 }
 
@@ -67,8 +72,11 @@ class RestApiClient {
 
             request.end((err, res) => {
                 if (err) {
-                    timer.error(err.message);
-                    reject(err);
+                    var e = this._processError(err);
+
+                    timer.error(e);
+                    reject(e);
+
                     return;
                 }
 
@@ -118,6 +126,34 @@ class RestApiClient {
      */
     _json(data) {
         return JSON.stringify(data);
+    }
+
+    /**
+     * process api error
+     *
+     * @param  {Error} error
+     * @return {Error}
+     */
+    _processError(error) {
+
+        if (error.response &&
+            error.response.body &&
+            error.response.body.error &&
+            error.response.body.error.code &&
+            error.response.body.error.message
+        ) {
+
+            var e = new RestApiClientError(
+                error.response.body.error.message,
+                error.response.body.error.code,
+                error.response.body.error.entity
+            );
+
+            return e;
+
+        } else {
+            return error;
+        }
     }
 }
 
