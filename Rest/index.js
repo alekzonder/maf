@@ -62,19 +62,14 @@ class Rest {
 
             var resourceUrl = this._getResourceUrl(resource.resource);
 
-            this._globalOptionsResponse.resources.push({
-                resource: resource.resource,
-                title: resource.title
-            });
-
-            var optionsResponse = {
+            let optionsResponse = {
                 methods: {}
             };
 
             _.each(resource.methods, (methodData, method) => {
 
                 if (!methodData.callback) {
-                    var err = new Error('no callback in method ' + method + ' ' + resource.resource);
+                    var err = new Error(`no callback in method ${method} ${resource.resource}`);
                     this._logger.error(err);
                     return;
                 }
@@ -83,7 +78,7 @@ class Rest {
 
                 if (!this._app[lcMethod]) {
                     var error = new Error(
-                        'no method "' + lcMethod + '" in app for resource ' + method + ' ' + resource.resource
+                        `no method "${lcMethod}" in app for resource ${method} ${resource.resource}`
                     );
 
                     this._logger.error(error);
@@ -111,6 +106,14 @@ class Rest {
                     methodData.prehook(methodData, di);
                 }
 
+                if (methodData.disabled) {
+                    return;
+                }
+
+                if (methodData.onlyPrivate && !di.config.private) {
+                    return;
+                }
+
                 var middlewares = {
                     afterSchemaCheck: []
                 };
@@ -130,8 +133,22 @@ class Rest {
                             return reject(e);
                         }
 
-                        if (middleware.check(methodData)) {
-                            methodData = middleware.prepare(method, methodData);
+                        var checkResult = false;
+
+                        if (typeof middleware.check == 'undefined') {
+                            checkResult = true;
+                        } else if (typeof middleware.check == 'function') {
+                            checkResult = middleware.check(methodData);
+                        } else {
+                            checkResult = Boolean(middleware.check);
+                        }
+
+                        if (checkResult) {
+
+                            if (middleware.prepare) {
+                                methodData = middleware.prepare(method, methodData);
+                            }
+
                             middlewares[middleware.position].push(middleware.middleware);
                         }
 
@@ -139,11 +156,12 @@ class Rest {
                 }
 
                 if (methodData.schema.path) {
-                    methodOptionsResponse.path_vars = joiToJsonSchema(joi.object().keys(methodData.schema.path));
+                    methodOptionsResponse.path_vars = joiToJsonSchema(
+                        joi.object().keys(methodData.schema.path)
+                    );
                 }
 
                 if (methodData.schema.query) {
-
                     routeArgs.push((req, res, next) => {
 
                         var joiOptions = {
@@ -185,7 +203,9 @@ class Rest {
                         });
                     });
 
-                    methodOptionsResponse.request = joiToJsonSchema(joi.object().keys(methodData.schema.query));
+                    methodOptionsResponse.request = joiToJsonSchema(
+                        joi.object().keys(methodData.schema.query)
+                    );
 
                 }
 
@@ -230,9 +250,10 @@ class Rest {
                         });
                     });
 
-                    methodOptionsResponse.request = joiToJsonSchema(joi.object().keys(methodData.schema.body));
+                    methodOptionsResponse.request = joiToJsonSchema(
+                        joi.object().keys(methodData.schema.body)
+                    );
                 }
-
 
                 if (middlewares.afterSchemaCheck.length) {
 
@@ -241,7 +262,6 @@ class Rest {
                     });
 
                 }
-
 
                 routeArgs.push((req, res, next) => {
 
@@ -253,14 +273,43 @@ class Rest {
 
                 });
 
+                routeArgs.push((req, res, next) => {
+
+                    if (!res.ctx) {
+                        res.sendCtxNow().notFound('resource not found', 'resource_not_found');
+                        return;
+                    }
+
+                    res.ctx.body.debug = {
+                        time: (res._startTime) ? (new Date().getTime() - res._startTime) : null
+                    };
+
+                    if (req._debug && res.ctx) {
+                        res.ctx.body.debug.log = req.di.debug.get();
+                    }
+
+                    res.sendCtx();
+                });
+
                 this._app[lcMethod].apply(this._app, routeArgs);
 
                 optionsResponse.methods[method] = methodOptionsResponse;
             });
 
-            this._app.options(resourceUrl, (req, res) => {
-                res.json(optionsResponse);
-            });
+            if (_.keys(optionsResponse.methods).length) {
+
+                this._globalOptionsResponse.resources.push({
+                    resource: resource.resource,
+                    title: resource.title
+                });
+
+                this._app.options(resourceUrl, (req, res) => {
+                    res.json(optionsResponse);
+                });
+
+            } else {
+                this._logger.info(`${resource.resource} disabled`);
+            }
 
             resolve();
 

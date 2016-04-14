@@ -16,11 +16,17 @@ class ErrorCheckChain {
 
         this._default = null;
 
+        this._parent = null;
+
         this._checks = [];
     }
 
     setDefault(fn) {
         this._default = fn;
+    }
+
+    setParent(parent) {
+        this._parent = parent;
     }
 
     ifEntity(entity) {
@@ -29,6 +35,8 @@ class ErrorCheckChain {
         }
 
         var entityChain = new ErrorCheckChain(this._error, entity, this._logger);
+
+        entityChain.setParent(this);
 
         this._checks.push(entityChain);
 
@@ -48,6 +56,14 @@ class ErrorCheckChain {
         f.ifCode = true;
 
         this._checks.push(f);
+
+        return this;
+    }
+
+    end() {
+        if (this._parent) {
+            return this._parent;
+        }
 
         return this;
     }

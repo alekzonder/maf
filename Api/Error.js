@@ -1,5 +1,7 @@
 'use strict';
 
+var ErrorCheckChain = require('./ErrorCheckChain');
+
 /**
  * @class
  */
@@ -13,6 +15,7 @@ class ApiError extends Error {
      */
     constructor(message, code, status, list) {
         super(message);
+
         this.name = 'ApiError';
 
         this.code = code;
@@ -24,6 +27,21 @@ class ApiError extends Error {
             this.list = [];
         }
 
+        this.entity = null;
+
+        this.checkable = true;
+    }
+
+    getCheckChain(defaultResponse, logger) {
+        if (!defaultResponse) {
+            throw new Error('RestAiErrorCheckChain: no default response');
+        }
+
+        var chain = new ErrorCheckChain(this, null, logger);
+
+        chain.setDefault(defaultResponse);
+
+        return chain;
     }
 
 }

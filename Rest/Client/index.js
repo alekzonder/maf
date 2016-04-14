@@ -1,6 +1,7 @@
 'use strict';
 
 var request = require('superagent');
+var qs = require('qs');
 var DebugTimer = require('../../Debug/Timer');
 
 var RestApiClientError = require('./Error');
@@ -22,8 +23,7 @@ class RestApiClient {
             var timer = this._createTimer('get');
 
             timer.message = {
-                url: url,
-                body: query,
+                url: url + '?' + qs.stringify(query),
                 options: options
             };
 
@@ -146,8 +146,11 @@ class RestApiClient {
             var e = new RestApiClientError(
                 error.response.body.error.message,
                 error.response.body.error.code,
-                error.response.body.error.entity
+                error.response.body.error.entity,
+                error.response.body.error.list
             );
+
+            // e.prevError = error;
 
             return e;
 

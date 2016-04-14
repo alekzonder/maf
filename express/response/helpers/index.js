@@ -14,6 +14,16 @@ module.exports = function(options) {
 
         var helpers = {};
 
+        helpers.logServerError = function (error) {
+            var logErrorFn = _.get(req, 'di.logger.error');
+
+            if (error && logErrorFn && _.isFunction(logErrorFn)) {
+                req.di.logger.error(error);
+            }
+
+            this.serverError();
+        };
+
         helpers.serverError = function() {
 
             this.ctx = {
@@ -157,8 +167,10 @@ module.exports = function(options) {
 
             if (this.sendCtxImmediately) {
                 this.sendCtx();
-            } else {
+            } else if (this.ctxDone) {
                 this.ctxDone();
+            } else {
+                throw new Error('no ctxDone for response');
             }
         };
 

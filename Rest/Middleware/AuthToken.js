@@ -66,59 +66,41 @@ module.exports = (logger, di) => {
                     return res.sendCtxNow().forbidden('no auth_token', 'no_auth_token');
                 }
 
-                promise = di.api.authTokens.check(authToken);
-
-                promise
+                di.api.authTokens.check(authToken)
                     .then((token) => {
-                        return di.api.users.getById(token.userId);
-                    })
-                    .then((user) => {
-                        req.user = user;
-
                         delete req.query.authToken;
                         delete req.body.authToken;
 
-                        req.checkPermission = (permission, params) => {
-                            return di.api.rbac.check(req.user.group, permission, params);
-                        };
+                        req.user.setId(token.userId);
 
                         next();
+                    })
+                    .catch((error) => {
+                        var ec = {
+                            authTokens: di.api.authTokens.errorCodes
+                        };
+
+                        res.sendCtxNow();
+
+                        if (!error.checkable) {
+                            return res.logServerError(error);
+                        }
+
+                        var chain = error.getCheckChain(res.logServerError);
+
+                        chain.ifEntity('authToken')
+                            .ifCode(ec.authTokens.INVALID_DATA, res.forbidden)
+                            .ifCode(ec.authTokens.TOKEN_EXPIRED, res.forbidden)
+                            .ifCode(ec.authTokens.INVALID_AUTH_TOKEN, res.forbidden);
+
+                        chain.check();
+
                     });
 
             } else {
-                promise = new Promise((resolve) => {
-                    req.user = null;
-
-                    req.checkPermission = (permission, params) => {
-                        return new Promise((resolve) => {
-                            resolve(true);
-                        });
-                    };
-
-                    next();
-                });
+                next();
             }
 
-            promise
-                .catch((error) => {
-                    var errorCodes = di.api.authTokens.errorCodes;
-
-                    var validUserErrorCodes = [
-                        errorCodes.INVALID_DATA,
-                        errorCodes.INVALID_AUTH_TOKEN,
-                        errorCodes.TOKEN_EXPIRED
-                    ];
-
-                    if (
-                        error instanceof di.api.authTokens.ApiError &&
-                        validUserErrorCodes.indexOf(error.code) > -1
-                    ) {
-                        res.sendCtxNow().forbidden(error.message, error.code);
-                    } else {
-                        di.logger.error(error);
-                        res.sendCtxNow().serverError();
-                    }
-                });
         }
     };
 };
