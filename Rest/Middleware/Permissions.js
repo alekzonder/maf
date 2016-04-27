@@ -1,6 +1,6 @@
 var joi = require('joi');
 
-module.exports = (logger, di) => {
+module.exports = (logger) => {
 
     return {
 
@@ -17,7 +17,7 @@ module.exports = (logger, di) => {
             } else {
                 req.checkPermission = (permission, params) => {
 
-                    if (!req.user || !req.user.group) {
+                    if (!req.user || !req.user.getGroup || typeof req.user.getGroup !== 'function') {
 
                         req.di.logger.error('no req.user for checkPermission helper');
 
@@ -26,7 +26,7 @@ module.exports = (logger, di) => {
                         });
                     }
 
-                    return di.api.permissions.check(req.user.group, permission, params);
+                    return req.di.api.permissions.check(req.user.getGroup(), permission, params);
                 };
             }
 

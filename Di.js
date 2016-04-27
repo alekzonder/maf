@@ -1,7 +1,5 @@
 'use strict';
 
-// var RequestDi = require('./Request/Di');
-
 class Di {
 
     constructor() {
@@ -63,10 +61,6 @@ class Di {
     getConnection(name) {
         return this._connections[name];
     }
-
-    // createDebugDi(requestId) {
-        // return new RequestDi(this, requestId);
-    // }
 
 }
 
