@@ -8,18 +8,21 @@
     "url": "https://github.com/alekzonder/maf.git"
   },
   "author": "alekzonder <alekzonder@gmail.com>",
+  "engines": {
+    "node": ">=4"
+  },
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.15.0",
-    "cors": "^2.7.1",
-    "express": "^4.13.4",
-    "fs-extra": "0.26.7",
+    "body-parser": "1.15.0",
+    "cors": "2.7.1",
+    "express": "4.13.4",
+    "fs-extra": "0.28.0",
     "joi": "8.0.5",
     "joi-to-json-schema": "2.1.0",
-    "lodash": "4.6.1",
-    "log4js": "0.6.33",
-    "qs": "^6.1.0",
+    "lodash": "4.11.1",
+    "log4js": "0.6.35",
+    "qs": "6.1.0",
     "superagent": "1.8.3",
-    "uuid": "2.0.1"
+    "uuid": "2.0.2"
   }
 }
