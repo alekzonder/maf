@@ -20,7 +20,7 @@ module.exports = function(logger) {
                 res.status(500).json({
                     error: {
                         message: 'Server Error',
-                        code: 'server_error'
+                        code: 'serverError'
                     }
                 });
 

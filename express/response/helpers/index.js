@@ -31,7 +31,7 @@ module.exports = function(options) {
                 body: {
                     error: {
                         message: 'Server Error',
-                        code: 'server_error'
+                        code: 'serverError'
                     }
                 }
             };

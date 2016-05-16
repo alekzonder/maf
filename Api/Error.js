@@ -13,7 +13,7 @@ class ApiError extends Error {
      * @param  {String} code
      * @param  {Number} status
      */
-    constructor(message, code, status, list) {
+    constructor(message, code, status, list, entity) {
         super(message);
 
         this.name = 'ApiError';
@@ -28,6 +28,10 @@ class ApiError extends Error {
         }
 
         this.entity = null;
+
+        if (entity) {
+            this.entity = entity;
+        }
 
         this.checkable = true;
     }

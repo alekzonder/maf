@@ -1,4 +1,5 @@
 module.exports = {
-    INVALID_DATA: 'invalid_data',
-    ALREADY_EXISTS: 'already_exists'
+    INVALID_DATA: 'invalidData',
+    ALREADY_EXISTS: 'alreadyExists',
+    NOT_FOUND: 'notFound'
 };

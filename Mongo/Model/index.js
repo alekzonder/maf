@@ -166,10 +166,10 @@ class ModelAbstract {
 
     /**
      * findOneAndUpdate
-     * @param  {[type]} filter  [description]
-     * @param  {[type]} update  [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  {Object} filter
+     * @param  {Object} update
+     * @param  {Object} options
+     * @return {Object}
      */
     findOneAndUpdate(filter, update, options) {
 
