@@ -1,6 +1,6 @@
 {
   "name": "maf",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "frmwrk",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,9 @@
   "author": "alekzonder <alekzonder@gmail.com>",
   "engines": {
     "node": ">=4"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
   },
   "license": "MIT",
   "dependencies": {

@@ -30,6 +30,11 @@ class Rest {
         this._middlewares = [];
     }
 
+    /**
+     * add rest middleware
+     *
+     * @param {Object} middleware
+     */
     addMiddleware(middleware) {
         // TODO check
         this._middlewares.push(middleware);
@@ -358,6 +363,8 @@ class Rest {
 
     /**
      * get resource url
+     *
+     * @private
      * @param  {String} url
      * @return {String}
      */

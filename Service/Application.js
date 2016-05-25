@@ -2,7 +2,7 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
-module.exports = function(di) {
+module.exports = function(di, config) {
 
     var app = express();
 
@@ -16,17 +16,17 @@ module.exports = function(di) {
         methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
     }));
 
-    app.use(require('../express/response/helpers')({
-        continue: false
-    }));
+    app.use(require('../express/response/helpers')({continue: false}));
 
-    app.use(bodyParser.json({
-        type: '*/*'
-    }));
+    app.use(bodyParser.json({type: '*/*'}));
+
+    if (config && config.bodyParser && bodyParser.urlencoded) {
+        app.use(bodyParser.urlencoded({extended: false}));
+    }
+
     app.use(require('../express/body-parser/json-error')());
 
     app.use(require('../express/request/id')());
-
 
     // detect _debug
     app.use((req, res, next) => {
