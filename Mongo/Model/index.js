@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var ModelError = require('./Error');
 var ModelErrorCodes = require('./ErrorCodes');
@@ -268,12 +268,9 @@ class ModelAbstract {
      *
      * @param  {Object} params
      * @param  {Object} fields
-     * @param  {Object} sort
-     * @param  {Number} limit
-     * @param  {Number} offset
      * @return {Promise}
      */
-    find(filter, fields, sort, limit, offset, options) {
+    find(filter, fields) {
 
         var timer = this._createTimer('find');
 
@@ -349,9 +346,12 @@ class ModelAbstract {
 
         return new Promise((resolve, reject) => {
             this._collection.remove(filter, {})
-                .then((count) => {
+                .then((data) => {
                     timer.stop();
-                    resolve(count);
+                    resolve({
+                        ok: data.result.ok,
+                        count: data.result.n
+                    });
                 })
                 .catch((error) => {
                     timer.error(error.message);
@@ -405,6 +405,7 @@ class ModelAbstract {
     /**
      * emit debug data
      *
+     * @private
      * @param  {Object} data
      */
     _logDebug(data) {
@@ -419,6 +420,7 @@ class ModelAbstract {
     /**
      * create debug timer
      *
+     * @private
      * @param  {String} name
      * @return {DebugTimer}
      */
@@ -435,6 +437,7 @@ class ModelAbstract {
     /**
      * json helper
      *
+     * @private
      * @param  {Object} data
      * @return {String}
      */
