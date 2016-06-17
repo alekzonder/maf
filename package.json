@@ -1,6 +1,6 @@
 {
   "name": "maf",
-  "version": "0.2.6",
+  "version": "0.2.7-beta.1",
   "description": "frmwrk",
   "main": "index.js",
   "scripts": {
@@ -19,16 +19,16 @@
   },
   "license": "MIT",
   "dependencies": {
-    "body-parser": "1.15.0",
+    "body-parser": "1.15.1",
     "cors": "2.7.1",
-    "express": "4.13.4",
-    "fs-extra": "0.28.0",
-    "joi": "8.0.5",
-    "joi-to-json-schema": "2.1.0",
-    "lodash": "4.11.1",
-    "log4js": "0.6.35",
-    "qs": "6.1.0",
-    "superagent": "1.8.3",
+    "express": "4.14.0",
+    "fs-extra": "0.30.0",
+    "joi": "9.0.0-3",
+    "joi-to-json-schema": "2.2.0",
+    "lodash": "4.13.1",
+    "log4js": "0.6.37",
+    "qs": "6.2.0",
+    "superagent": "2.0.0",
     "uuid": "2.0.2"
   },
   "devDependencies": {
