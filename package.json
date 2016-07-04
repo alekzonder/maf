@@ -4,7 +4,8 @@
   "description": "frmwrk",
   "main": "index.js",
   "scripts": {
-      "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html"
+    "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
+    "test": "./node_modules/.bin/mocha ./tests/unit"
   },
   "repository": {
     "type": "git",
@@ -32,12 +33,13 @@
     "uuid": "2.0.2"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai": "3.5.0",
+    "chai-json-schema": "git+https://github.com/chaijs/chai-json-schema.git",
     "deride": "^0.5.3",
     "jsdoc": "^3.4.0",
     "minami": "^1.1.1",
     "mocha": "^2.4.5",
-    "rewire": "^2.5.1"
+    "rewire": "^2.5.1",
+    "tingodb": "^0.4.2"
   }
 }
