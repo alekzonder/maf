@@ -30,8 +30,6 @@ class TestModel extends TingoModel {
     }
 }
 
-var db = new Engine.Db(tmpPath, {});
-
 var model;
 
 describe('Model/Tingodb', function() {
@@ -39,13 +37,16 @@ describe('Model/Tingodb', function() {
     beforeEach(function() {
         fs.removeSync(tmpPath);
         fs.mkdirsSync(tmpPath);
+
+        var db = new Engine.Db(tmpPath, {});
+
         model = new TestModel(db);
         model.init();
     });
 
     describe('#insertOne', function() {
 
-        it('should success insert', function(done) {
+        it('insert success', function(done) {
 
             model.insertOne({
                     id: 1,
@@ -67,7 +68,7 @@ describe('Model/Tingodb', function() {
 
         });
 
-        it('should error on duplicate id', function(done) {
+        it('reject error on duplicate id', function(done) {
             var data = {
                 id: 1,
                 name: 'test'
@@ -85,6 +86,233 @@ describe('Model/Tingodb', function() {
         });
 
     });
+
+    describe('#findOneAndUpdate', function () {
+
+        it('update success', function (done) {
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+                    return model.findOneAndUpdate(
+                        {id: 1},
+                        {$set: {name: '100'}}
+                    );
+                })
+                .then((updated) => {
+                    assert.jsonSchema(updated, jj(joi.object().keys({
+                        _id: joi.number().required().valid(1),
+                        id: joi.number().required().valid(1),
+                        name: joi.string().required().valid('100')
+                    })));
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('return null for unknown item update', function (done) {
+
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+                    return model.findOneAndUpdate(
+                        {id: 2},
+                        {$set: {name: '100'}}
+                    );
+                })
+                .then((updated) => {
+                    assert.equal(null, updated);
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+    describe('#findOne', function () {
+
+        it('success', function (done) {
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+
+                    return model.findOne({name: 'test'});
+                })
+                .then((found) => {
+                    assert.jsonSchema(found, jj(joi.object().keys({
+                        _id: joi.number().required().valid(1),
+                        id: joi.number().required().valid(1),
+                        name: joi.string().required().valid('test')
+                    })));
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+
+        it('found nothing', function (done) {
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+
+                    return model.findOne({name: '2'});
+                })
+                .then((found) => {
+
+                    assert.equal(null, found);
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+
+    describe('#findOneById', function () {
+
+        it('success', function (done) {
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+
+                    return model.findOneById(1);
+                })
+                .then((found) => {
+                    assert.jsonSchema(found, jj(joi.object().keys({
+                        _id: joi.number().required().valid(1),
+                        id: joi.number().required().valid(1),
+                        name: joi.string().required().valid('test')
+                    })));
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+
+        it('found nothing', function (done) {
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+
+                    return model.findOneById(2);
+                })
+                .then((found) => {
+
+                    assert.equal(null, found);
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+    describe('#find', function () {
+
+        it('success', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then(() => {
+                    return model.find({group: 1}).exec();
+                })
+                .then((result) => {
+
+                    var schema = joi.object().keys({
+                        total: joi.number().required().valid(2),
+                        docs: joi.array().items({
+                            _id: joi.number().required().valid([1,2]),
+                            id: joi.number().required().valid([1,2]),
+                            name: joi.string().required().valid(['test', 'test2']),
+                            group: joi.number().required().valid(1)
+                        }).length(2)
+                    });
+
+                    assert.jsonSchema(result, jj(schema));
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('found nothing', function (done) {
+
+            model.find({group: 1}).exec()
+                .then((result) => {
+
+                    assert.jsonSchema(result, jj(joi.object().keys({
+                        total: joi.number().required().valid(0),
+                        docs: joi.array().length(0)
+                    })));
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+
+        // TODO sort, limit ... other chain methods
+
+    });
+
 
 
 
