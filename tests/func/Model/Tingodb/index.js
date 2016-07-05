@@ -313,7 +313,266 @@ describe('Model/Tingodb', function() {
 
     });
 
+    describe('#update', function () {
 
+        it('update one success', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then((item) => {
+                    return model.update(
+                        {id: 1},
+                        {$set: {name: '100'}}
+                    );
+                })
+                .then((updateCount) => {
+                    assert.equal(1, updateCount);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('update multi success', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then((item) => {
+                    return model.update(
+                        {group: 1},
+                        {$set: {name: '100'}},
+                        {multi: true}
+                    );
+                })
+                .then((updateCount) => {
+                    assert.equal(2, updateCount);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('nothing update', function (done) {
+
+            var data = {
+                id: 1,
+                name: 'test'
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+                    return model.update(
+                        {group: 100500},
+                        {$set: {name: '100'}},
+                        {multi: true}
+                    );
+                })
+                .then((cnt) => {
+                    assert.equal(0, cnt);
+
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+    describe('#remove', function () {
+
+        it('success', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then((item) => {
+                    return model.remove({group: 1});
+                })
+                .then((cnt) => {
+                    assert.equal(2, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('success single', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then((item) => {
+                    return model.removeOne({group: 1});
+                })
+                .then((cnt) => {
+                    assert.equal(1, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('found nothing', function (done) {
+
+            model.remove({group: 100})
+                .then((cnt) => {
+                    assert.equal(0, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+
+    describe('#count', function () {
+
+        it('success 2', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 1
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then(() => {
+                    return model.count({group: 1});
+                })
+                .then((cnt) => {
+                    assert.equal(2, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('success 1', function (done) {
+            var data = [
+                {
+                    id: 1,
+                    name: 'test',
+                    group: 1
+                },
+                {
+                    id: 2,
+                    name: 'test2',
+                    group: 2
+                }
+            ];
+
+            Promise.all([
+                model.insertOne(data[0]),
+                model.insertOne(data[1])
+            ])
+                .then(() => {
+                    return model.count({group: 1});
+                })
+                .then((cnt) => {
+                    assert.equal(1, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('nothing found', function (done) {
+            model.count({group: 1})
+                .then((cnt) => {
+                    assert.equal(0, cnt);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+    });
+
+    describe('#aggregate', function () {
+
+        it('not implemented', function (done) {
+            return model.aggregate()
+                .then((result) => {
+                    done(1);
+                })
+                .catch((error) => {
+                    done();
+                });
+        });
+    });
 
 
 });
