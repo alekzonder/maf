@@ -21,9 +21,9 @@ var tmpPath = rootPath + '/tests/tmp/Tingodb';
 var logger = require('log4js').getLogger();
 
 
-var TingoModel = require(rootPath + '/lib/Model/Tingodb');
+var ModelTingodb = require(rootPath + '/lib/Model/Tingodb');
 
-class TestModel extends TingoModel {
+class TestModel extends ModelTingodb {
     constructor(db) {
         super(db);
         this._collectionName = 'test';
@@ -564,7 +564,7 @@ describe('Model/Tingodb', function() {
     describe('#aggregate', function () {
 
         it('not implemented', function (done) {
-            return model.aggregate()
+            model.aggregate()
                 .then((result) => {
                     done(1);
                 })
@@ -572,6 +572,65 @@ describe('Model/Tingodb', function() {
                     done();
                 });
         });
+    });
+
+    describe('#ensureIndexes', function () {
+
+        class ModelTestIndexes extends ModelTingodb {
+
+            constructor(db) {
+                super(db);
+                this._collectionName = 'test';
+                this._indexes = [
+                    {
+                        fields: {
+                            name: 1
+                        },
+                        options: {
+                            name: 'name',
+                            unique: true,
+                            background: true
+                        }
+                    },
+                    {
+                        fields: {
+                            id: 1
+                        }
+                    }
+                ];
+            }
+
+        }
+
+        it('no indexes', function (done) {
+            model.ensureIndexes()
+                .then((data) => {
+                    assert.deepEqual([], data);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+        });
+
+        it('ensure indexes success', function (done) {
+
+            var db = new Engine.Db(tmpPath, {});
+
+            var model = new ModelTestIndexes(db);
+            model.init();
+
+            model.ensureIndexes()
+                .then((data) => {
+                    assert.deepEqual(['name', 'id_1'], data);
+                    done();
+                })
+                .catch((error) => {
+                    done(error);
+                });
+
+        });
+
     });
 
 
