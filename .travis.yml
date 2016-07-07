@@ -3,3 +3,10 @@ node_js:
     - "4"
     - "5"
     - "6"
+
+services:
+    - mongodb
+
+before_script:
+    - sleep 1
+    - mongo --eval 'db.version()'
