@@ -1,10 +1,10 @@
 {
   "name": "maf",
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-beta.2",
   "description": "frmwrk",
   "main": "index.js",
   "scripts": {
-    "build": "node ./build.js",
+    "build": "npm test && node ./build.js",
     "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
     "test": "./node_modules/.bin/mocha ./tests/func"
   },
@@ -21,11 +21,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "body-parser": "1.15.1",
+    "body-parser": "^1.15.2",
     "cors": "2.7.1",
     "express": "4.14.0",
     "fs-extra": "0.30.0",
-    "joi": "9.0.0-3",
+    "joi": "^8.4.2",
     "joi-to-json-schema": "2.2.0",
     "lodash": "4.13.1",
     "log4js": "0.6.37",
