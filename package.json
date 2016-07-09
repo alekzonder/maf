@@ -3,6 +3,7 @@
   "version": "0.3.0-0",
   "description": "frmwrk",
   "main": "index.js",
+  "files": ["!lib", "lib/**"],
   "scripts": {
     "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
     "test": "./node_modules/.bin/mocha ./tests/func"
