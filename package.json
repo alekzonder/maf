@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm test && node ./build.js",
-    "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
+    "docs": "rm -rf ./docs && ./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
     "test": "./node_modules/.bin/mocha ./tests/func"
   },
   "repository": {
@@ -37,9 +37,11 @@
     "chai": "3.5.0",
     "chai-json-schema": "git+https://github.com/chaijs/chai-json-schema.git",
     "deride": "^0.5.3",
+    "ink-docstrap": "^1.2.1",
     "jsdoc": "^3.4.0",
     "minami": "^1.1.1",
     "mocha": "^2.4.5",
+    "mongodb": "^2.2.1",
     "rewire": "^2.5.1",
     "tingodb": "^0.4.2"
   }

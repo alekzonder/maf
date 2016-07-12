@@ -1,7 +1,7 @@
 {
     "source": {
         "includePattern": ".js$",
-        "excludePattern": "(node_modules/|docs|tests|stuff)"
+        "excludePattern": "(package|node_modules|docs|tests|stuff)"
     },
     "opts": {
         "destination": "./docs/",
