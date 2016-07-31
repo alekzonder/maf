@@ -10,3 +10,10 @@ services:
 before_script:
     - sleep 1
     - mongo --eval 'db.version()'
+
+addons:
+    code_climate:
+        repo_token: 90f8937208906c9143a652dbc0273a5033645d04e50c686e547beb2af9b884fb
+
+after_script:
+  - codeclimate-test-reporter < lcov.info
