@@ -36,6 +36,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-json-schema": "git+https://github.com/chaijs/chai-json-schema.git",
+    "codeclimate-test-reporter": "^0.3.3",
     "deride": "^0.5.3",
     "ink-docstrap": "^1.2.1",
     "istanbul": "^0.4.4",
