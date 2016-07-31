@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm test && node ./build.js",
     "docs": "rm -rf ./docs && ./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
-    "test": "./node_modules/.bin/mocha ./tests/func"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./tests/func/"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "chai-json-schema": "git+https://github.com/chaijs/chai-json-schema.git",
     "deride": "^0.5.3",
     "ink-docstrap": "^1.2.1",
+    "istanbul": "^0.4.4",
     "jsdoc": "^3.4.0",
     "minami": "^1.1.1",
     "mocha": "^2.4.5",
