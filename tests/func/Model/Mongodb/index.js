@@ -636,7 +636,7 @@ describe('Model/Mongodb', function() {
         it('no indexes', function (done) {
             model.ensureIndexes()
                 .then((data) => {
-                    assert.deepEqual([], data);
+                    assert.deepEqual({collection: 'test', indexes: []}, data);
                     done();
                 })
                 .catch((error) => {
