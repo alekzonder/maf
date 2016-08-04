@@ -1,6 +1,6 @@
 {
   "name": "maf",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "description": "frmwrk",
   "main": "index.js",
   "scripts": {
