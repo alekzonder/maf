@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm test && node ./build.js",
     "docs": "rm -rf ./docs && ./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html",
-    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./tests/func/"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/func/"
   },
   "repository": {
     "type": "git",

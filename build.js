@@ -1,4 +1,5 @@
 var fs = require('fs-extra');
+var path = require('path');
 
 var logger = require('log4js').getLogger('build');
 
@@ -20,16 +21,16 @@ var copyFiles = [
 ];
 
 for (var file of copyFiles) {
-    fs.copySync(__dirname + '/' + file, packagePath + '/' + file);
+    fs.copySync(path.join(__dirname, file), path.join(packagePath, file));
     logger.info(`copy  ${file}`);
 }
 
 logger.info('copy code');
 
-fs.walk(__dirname + '/lib')
+fs.walk(path.join(__dirname, '/lib'))
     .on('error', function (error) {
         logger.error(error);
-        process.exit(1);
+        throw err;
     })
     .on('data', function (file) {
         if (file.stats.isDirectory()) {
@@ -37,14 +38,14 @@ fs.walk(__dirname + '/lib')
         }
 
         var from = file.path;
-        var to = file.path.replace(__dirname + '/lib', packagePath);
+        var to = file.path.replace(path.join(__dirname, 'lib'), packagePath);
 
         var code = fs.readFileSync(from);
 
         fs.outputFile(to, code, function (err) {
             if (err) {
                 logger.error(error);
-                process.exit(1);
+                throw err;
             }
 
             logger.info('copied ' + to);
