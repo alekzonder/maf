@@ -16,7 +16,7 @@ var assert = chai.assert;
 
 // init
 var rootPath = path.resolve(__dirname + '/../../../..');
-var tmpPath = rootPath + '/tests/tmp/Tingodb';
+var tmpPath = rootPath + '/test/tmp/Tingodb';
 
 var logger = require('log4js').getLogger();
 
