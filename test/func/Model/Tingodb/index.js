@@ -21,7 +21,7 @@ var tmpPath = rootPath + '/test/tmp/Tingodb';
 var logger = require('log4js').getLogger();
 
 
-var ModelTingodb = require(rootPath + '/lib/Model/Tingodb');
+var ModelTingodb = require(rootPath + '/src/Model/Tingodb');
 
 class TestModel extends ModelTingodb {
     constructor(db) {

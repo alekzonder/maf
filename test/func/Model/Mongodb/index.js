@@ -22,7 +22,7 @@ var tmpPath = rootPath + '/tests/tmp/Tingodb';
 
 var logger = require('log4js').getLogger();
 
-var ModelMongodb = require(rootPath + '/lib/Model/Mongodb');
+var ModelMongodb = require(rootPath + '/src/Model/Mongodb');
 
 var db;
 

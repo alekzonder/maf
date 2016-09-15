@@ -34,7 +34,7 @@ for (var file of copyFiles) {
 
 logger.info('copy code');
 
-fs.walk(path.join(__dirname, '/lib'))
+fs.walk(path.join(__dirname, '/src'))
     .on('error', function (error) {
         logger.error(error);
         throw err;
@@ -45,7 +45,7 @@ fs.walk(path.join(__dirname, '/lib'))
         }
 
         var from = file.path;
-        var to = file.path.replace(path.join(__dirname, 'lib'), packagePath);
+        var to = file.path.replace(path.join(__dirname, 'src'), packagePath);
 
         var code = fs.readFileSync(from);
 
