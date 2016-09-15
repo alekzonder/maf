@@ -15,10 +15,17 @@ fs.mkdirsSync(packagePath);
 logger.info(`create package dir ${packagePath}`);
 
 var copyFiles = [
-    'package.json',
     'README.md',
     'LICENSE'
 ];
+
+// copy and change package.json
+var pkg = require(__dirname + '/package.json');
+
+delete pkg.scripts.prepublish;
+
+fs.writeFileSync(path.join(packagePath, 'package.json'), JSON.stringify(pkg, null, '    '));
+
 
 for (var file of copyFiles) {
     fs.copySync(path.join(__dirname, file), path.join(packagePath, file));
