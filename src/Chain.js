@@ -59,12 +59,7 @@ class Chain {
             if (typeof step === 'function') {
                 that[name] = makeFunctionStep(name, step);
             } else {
-                // if (typeof step !== 'undefined' && step !== null) {
-                //     that._data[name] = step;
-                // }
-
                 that[name] = makeSimpleStep(name);
-                // throw new Error('unknown step value in maf/Chain for step: ' + name);
             }
 
         }
@@ -93,10 +88,14 @@ class Chain {
 
     exec() {
         if (!this._execCallback) {
-            throw new Error('no callback for ' + this.constructor.name);
+            return this._data;
         }
 
         return this._execCallback(this._data);
+    }
+
+    done() {
+        return this.exec();
     }
 
 }
