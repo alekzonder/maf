@@ -30,8 +30,14 @@ class Chain {
 
         var makeFunctionStep = function (stepName, step) {
 
-            return function(value) {
-                value = step.call(this, value);
+            return function() {
+                var args = [this._data];
+
+                for (var i in arguments) {
+                    args.push(arguments[i]);
+                }
+
+                var value = step.apply(this, args);
 
                 if (typeof value !== 'undefined') {
                     this._data[stepName] = value;
@@ -42,6 +48,10 @@ class Chain {
 
         };
 
+        if (typeof this._config.defaults === 'object') {
+            this._data = JSON.parse(JSON.stringify(this._config.defaults));
+        }
+
         for (var name in this._config.steps) {
 
             var step = this._config.steps[name];
@@ -49,9 +59,9 @@ class Chain {
             if (typeof step === 'function') {
                 that[name] = makeFunctionStep(name, step);
             } else {
-                if (typeof step !== 'undefined' && step !== null) {
-                    that._data[name] = step;
-                }
+                // if (typeof step !== 'undefined' && step !== null) {
+                //     that._data[name] = step;
+                // }
 
                 that[name] = makeSimpleStep(name);
                 // throw new Error('unknown step value in maf/Chain for step: ' + name);
