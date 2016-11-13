@@ -35,7 +35,7 @@
     "joi-to-json-schema": "^2.2.1",
     "jsdoc": "^3.4.1",
     "lodash": "^4.16.4",
-    "log4js": "^0.6.38",
+    "log4js": "^1.0.1",
     "log4js-nested": "^0.2.0",
     "qs": "^6.3.0",
     "superagent": "^2.3.0",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "chai-json-schema": "git+https://github.com/chaijs/chai-json-schema.git",
+    "chai-json-schema": "^1.4.0",
     "codeclimate-test-reporter": "^0.4.0",
     "deride": "^1.1.0",
     "docdash": "^0.4.0",
