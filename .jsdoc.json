@@ -4,7 +4,7 @@
         "excludePattern": "(package|node_modules|docs|tests|stuff)"
     },
     "opts": {
-        "destination": "./api_docs/",
+        "destination": "./jsdoc/",
         "encoding": "utf8",
         "recurse": true,
         "template": "./node_modules/docdash"

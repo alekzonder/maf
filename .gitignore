@@ -1,5 +1,5 @@
 node_modules
-api_docs
+jsdoc
 package
 coverage
-
+npm-debug.log
