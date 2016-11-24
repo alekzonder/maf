@@ -1,17 +1,9 @@
 'use strict';
 
-/**
- * @requires joi
- */
 var joi = require('joi');
-
-/**
- * @requires lodash as _
- */
 var _ = require('lodash');
 
 var ApiError = require('./Error');
-
 var ApiErrorCodes = require('./ErrorCodes');
 
 /**
@@ -38,6 +30,7 @@ class ApiAbstract {
      *
      * using joi module
      *
+     * @private
      * @param  {Object} data
      * @param  {Object} schema
      * @param  {Object} options
@@ -84,6 +77,14 @@ class ApiAbstract {
 
     }
 
+    /**
+     * validate object by schema
+     *
+     * @param {Object} data
+     * @param {Object} schema
+     * @param {Object} options
+     * @return {Object}
+     */
     validate(data, schema, options) {
         return this._validate(data, schema, options);
     }
@@ -91,6 +92,7 @@ class ApiAbstract {
     /**
      * is empty data
      *
+     * @private
      * @param  {Object}  data
      * @return {Boolean}
      */
@@ -102,8 +104,12 @@ class ApiAbstract {
         return _.keys(data).length ? false : true;
     }
 
-
-
+    /**
+     * clear system fields in object
+     *
+     * @param {Object} data
+     * @return {Object}
+     */
     clearSystemFields(data) {
 
         if (!this._systemFields) {
