@@ -27,10 +27,18 @@ class RestApiClient {
                 options: options
             };
 
+            if (!options || typeof options !== 'object') {
+                options = {};
+            }
+
             var request = superagent.get(url);
 
             if (query) {
                 request.query(query);
+            }
+
+            if (options.timeout) {
+                request.timeout(options.timeout);
             }
 
             request.end((err, res) => {
@@ -64,7 +72,15 @@ class RestApiClient {
                 options: options
             };
 
+            if (!options || typeof options !== 'object') {
+                options = {};
+            }
+
             var request = superagent.post(url);
+
+            if (options.timeout) {
+                request.timeout(options.timeout);
+            }
 
             if (body) {
                 request.send(body);
