@@ -7,7 +7,6 @@ var ApiError = require('./Error');
 var ApiErrorCodes = require('./ErrorCodes');
 
 /**
- * @class
  * @abstract
  */
 class ApiAbstract {

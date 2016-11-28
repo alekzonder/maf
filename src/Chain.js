@@ -1,8 +1,24 @@
 'use strict';
 
-
+/**
+ * Data chain object
+ *
+ * @example
+ * var Chain = require('maf/Chain');
+ * var chain = new Chain({limit: {defaults: 5}, skip: null});
+ * chain.onExec((data) => {console.log(data);});
+ *
+ * chain.skip(5).limit(10).exec(); // get data in onExec callback
+ * // OR
+ * var data = chain.skip(5).limit(10).data();
+ *
+ *
+ */
 class Chain {
 
+    /**
+     * @param {Object} config
+     */
     constructor (config) {
 
         this._config = config;
@@ -15,6 +31,20 @@ class Chain {
 
     }
 
+    /**
+     * return collected data
+     *
+     * @return {Object}
+     */
+    get data () {
+        return this._data;
+    }
+
+    /**
+     * init chain by config
+     *
+     * @private
+     */
     _init () {
         var that = this;
 
@@ -65,6 +95,12 @@ class Chain {
         }
     }
 
+    /**
+     * map data to chain
+     *
+     * @param {Object} data
+     * @return {this}
+     */
     mapToChain (data) {
 
         for (var name in data) {
@@ -78,14 +114,20 @@ class Chain {
         return this;
     }
 
+    /**
+     * set exec callback
+     *
+     * @param {Function} callback
+     */
     onExec (callback) {
         this._execCallback = callback;
     }
 
-    get data () {
-        return this._data;
-    }
-
+    /**
+     * exec onExec callback
+     *
+     * @return {*}
+     */
     exec () {
         if (!this._execCallback) {
             return this._data;
@@ -94,6 +136,11 @@ class Chain {
         return this._execCallback(this._data);
     }
 
+    /**
+     * alias for exec
+     *
+     * @return {*}
+     */
     done () {
         return this.exec();
     }

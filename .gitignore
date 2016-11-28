@@ -1,5 +1,5 @@
 node_modules
-jsdoc
+esdoc
 package
 coverage
 npm-debug.log
