@@ -1,6 +1,6 @@
-module.exports = function(logger) {
+module.exports = function (logger) {
 
-    return function(error, req, res, next) {
+    return function (error, req, res, next) {
 
         if (error) {
             if (error instanceof SyntaxError) {

@@ -23,7 +23,7 @@ class ModelTingodb {
      * @param  {Object} config
      * @param  {mongodb} db
      */
-    constructor(db) {
+    constructor (db) {
 
         this.Error = ModelError;
         this.errorCodes = ModelErrorCodes;
@@ -58,7 +58,7 @@ class ModelTingodb {
      *
      * @param {Request/Debug} debugger
      */
-    setDebugger(__debugger) {
+    setDebugger (__debugger) {
         this._debugger = __debugger;
     }
 
@@ -67,7 +67,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    init() {
+    init () {
 
         if (!this._collectionName) {
 
@@ -88,7 +88,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    ensureIndexes() {
+    ensureIndexes () {
 
         return new Promise((resolve, reject) => {
 
@@ -137,7 +137,7 @@ class ModelTingodb {
      * @param  {Object} data
      * @return {Promise}
      */
-    insertOne(data, options) {
+    insertOne (data, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -190,7 +190,7 @@ class ModelTingodb {
      * @param  {Object} options
      * @return {Object}
      */
-    findOneAndUpdate(filter, update, sort, options) {
+    findOneAndUpdate (filter, update, sort, options) {
 
         var timer = this._createTimer('findOneAndUpdate');
 
@@ -242,7 +242,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    findOne(query, options) {
+    findOne (query, options) {
         return new Promise((resolve, reject) => {
 
             if (!options) {
@@ -275,7 +275,7 @@ class ModelTingodb {
      * @param  {String} id
      * @return {Promise}
      */
-    findOneById(id, options) {
+    findOneById (id, options) {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOneById');
@@ -306,7 +306,7 @@ class ModelTingodb {
      * @param  {Object} fields
      * @return {Promise}
      */
-    find(filter, fields) {
+    find (filter, fields) {
 
         var timer = this._createTimer('find');
 
@@ -365,7 +365,7 @@ class ModelTingodb {
      * @param  {Object} data
      * @return {Promise}
      */
-    update(filter, data, options) {
+    update (filter, data, options) {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('update');
@@ -392,7 +392,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    remove(filter, options) {
+    remove (filter, options) {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('remove');
@@ -420,7 +420,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    removeOne(filter, options) {
+    removeOne (filter, options) {
 
         if (!options) {
             options = {};
@@ -439,7 +439,7 @@ class ModelTingodb {
      * @param  {Object} options
      * @return {Promise}
      */
-    count(filter, options) {
+    count (filter, options) {
         var timer = this._createTimer('count');
         timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
@@ -464,7 +464,7 @@ class ModelTingodb {
      *
      * @return {Promise}
      */
-    aggregate() {
+    aggregate () {
 
         return new Promise((resolve, reject) => {
             reject(new Error('aggregate not implemented in Model/Tingodb'));
@@ -479,7 +479,7 @@ class ModelTingodb {
      * @private
      * @param  {Object} data
      */
-    _logDebug(data) {
+    _logDebug (data) {
 
         if (!this._debugger || !this._debugger.log) {
             return;
@@ -495,7 +495,7 @@ class ModelTingodb {
      * @param  {String} name
      * @return {DebugTimer}
      */
-    _createTimer(name) {
+    _createTimer (name) {
         var timer = new DebugTimer('mongo', name);
 
         timer.onStop((data) => {
@@ -512,7 +512,7 @@ class ModelTingodb {
      * @param  {Object} data
      * @return {String}
      */
-    _json(data) {
+    _json (data) {
         return JSON.stringify(data);
     }
 

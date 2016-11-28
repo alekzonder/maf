@@ -1,4 +1,4 @@
-function promisifyCollection(collection) {
+function promisifyCollection (collection) {
     var methods = ['insert'];
 
     for (var method of methods) {
@@ -7,7 +7,7 @@ function promisifyCollection(collection) {
 
             collection['_o_' + method] = collection[method];
 
-            collection[method] = function() {
+            collection[method] = function () {
 
                 var that = this;
 
@@ -17,11 +17,11 @@ function promisifyCollection(collection) {
                     args.push(v);
                 }
 
-                return new Promise(function(resolve, reject) {
+                return new Promise(function (resolve, reject) {
 
                     args.push(null);
 
-                    args.push(function(err, result) {
+                    args.push(function (err, result) {
 
                         if (err) {
                             return reject(err);
@@ -90,11 +90,11 @@ var promisifyInsert = function (collection) {
     return collection;
 };
 
-module.exports = function(db) {
+module.exports = function (db) {
 
     db._o_collection = db.collection;
 
-    db.collection = function() {
+    db.collection = function () {
         var collection = this._o_collection.apply(this, arguments);
 
         collection = promisifyInsert(collection);

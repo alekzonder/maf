@@ -3,7 +3,7 @@
 
 class Chain {
 
-    constructor(config) {
+    constructor (config) {
 
         this._config = config;
 
@@ -15,11 +15,11 @@ class Chain {
 
     }
 
-    _init() {
+    _init () {
         var that = this;
 
-        var makeSimpleStep = function(stepName) {
-            return function(value) {
+        var makeSimpleStep = function (stepName) {
+            return function (value) {
                 if (value) {
                     this._data[stepName] = value;
                 }
@@ -30,7 +30,7 @@ class Chain {
 
         var makeFunctionStep = function (stepName, step) {
 
-            return function() {
+            return function () {
                 var args = [this._data];
 
                 for (var i in arguments) {
@@ -65,7 +65,7 @@ class Chain {
         }
     }
 
-    mapToChain(data) {
+    mapToChain (data) {
 
         for (var name in data) {
             if (!this[name]) {
@@ -78,15 +78,15 @@ class Chain {
         return this;
     }
 
-    onExec(callback) {
+    onExec (callback) {
         this._execCallback = callback;
     }
 
-    get data() {
+    get data () {
         return this._data;
     }
 
-    exec() {
+    exec () {
         if (!this._execCallback) {
             return this._data;
         }
@@ -94,7 +94,7 @@ class Chain {
         return this._execCallback(this._data);
     }
 
-    done() {
+    done () {
         return this.exec();
     }
 

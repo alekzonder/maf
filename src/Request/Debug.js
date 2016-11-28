@@ -2,15 +2,15 @@
 
 class RequestDebug {
 
-    constructor() {
+    constructor () {
         this._log = [];
     }
 
-    log(data) {
+    log (data) {
         this._log.push(data);
     }
 
-    get() {
+    get () {
         return this._log;
     }
 }

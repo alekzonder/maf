@@ -2,7 +2,7 @@
 
 class Di {
 
-    constructor() {
+    constructor () {
         this._config = null;
         this._logger = null;
 
@@ -14,7 +14,7 @@ class Di {
         this._connections = {};
     }
 
-    get config() {
+    get config () {
         return this._config;
     }
 
@@ -22,43 +22,43 @@ class Di {
         this._config = v;
     }
 
-    get logger() {
+    get logger () {
         return this._logger;
     }
 
-    set logger(logger) {
+    set logger (logger) {
         this._logger = logger;
     }
 
-    get models() {
+    get models () {
         return this._models;
     }
 
-    set models(models) {
+    set models (models) {
         this._models = models;
     }
 
-    get api() {
+    get api () {
         return this._api;
     }
 
-    set api(api) {
+    set api (api) {
         this._api = api;
     }
 
-    get debug() {
+    get debug () {
         return this._debug;
     }
 
-    set debug(debug) {
+    set debug (debug) {
         this._debug = debug;
     }
 
-    setConnection(name, connection) {
+    setConnection (name, connection) {
         this._connections[name] = connection;
     }
 
-    getConnection(name) {
+    getConnection (name) {
         return this._connections[name];
     }
 

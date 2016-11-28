@@ -3,7 +3,7 @@
 
 class FindCursorChain {
 
-    constructor(collection, filter, fields) {
+    constructor (collection, filter, fields) {
         this._collection = collection;
         this._cursor = collection.find(filter, fields);
 
@@ -12,7 +12,7 @@ class FindCursorChain {
         this._debugMessage = `.find(${this._json(filter)}, ${this._json(fields)})`;
     }
 
-    onExec(callback) {
+    onExec (callback) {
         this._execCallback = callback;
     }
 
@@ -25,7 +25,7 @@ class FindCursorChain {
     //     return this;
     // }
 
-    sort(sort) {
+    sort (sort) {
         if (sort) {
             this._debugMessage += `.sort(${this._json(sort)})`;
             this._cursor.sort(sort);
@@ -34,13 +34,13 @@ class FindCursorChain {
         return this;
     }
 
-    limit(limit) {
+    limit (limit) {
         this._debugMessage += `.limit(${limit})`;
         this._cursor.limit(limit);
         return this;
     }
 
-    skip(skip) {
+    skip (skip) {
         if (skip) {
             this._debugMessage += `.skip(${skip})`;
             this._cursor.skip(skip);
@@ -49,7 +49,7 @@ class FindCursorChain {
         return this;
     }
 
-    mapToChain(data) {
+    mapToChain (data) {
 
         for (var name in data) {
             if (!this[name]) {
@@ -62,7 +62,7 @@ class FindCursorChain {
         return this;
     }
 
-    exec() {
+    exec () {
         if (!this._execCallback) {
             throw new Error('no callback for FindCursorChain');
         }
@@ -72,7 +72,7 @@ class FindCursorChain {
         return this._execCallback(this._cursor, debugMessage);
     }
 
-    _json(data) {
+    _json (data) {
         return JSON.stringify(data);
     }
 

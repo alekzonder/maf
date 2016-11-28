@@ -15,11 +15,11 @@ module.exports = (logger, di) => {
 
         position: 'afterSchemaCheck',
 
-        check: function(methodData) {
+        check: function (methodData) {
             return (methodData && methodData.checkAuthToken) ? true : false;
         },
 
-        prepare: function(method, methodData) {
+        prepare: function (method, methodData) {
 
             if (!checkToken) {
                 return methodData;

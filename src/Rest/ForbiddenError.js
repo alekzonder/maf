@@ -4,7 +4,7 @@ var ErrorCheckChain = require('../Error/CheckChain');
 
 class ForbiddenError extends Error {
 
-    constructor(message, code, entity, list) {
+    constructor (message, code, entity, list) {
         super(message);
 
         this.message = 'forbidden';
@@ -28,7 +28,7 @@ class ForbiddenError extends Error {
         this.checkable = true;
     }
 
-    getCheckChain(defaultResponse, logger) {
+    getCheckChain (defaultResponse, logger) {
         if (!defaultResponse) {
             throw new Error('ForbiddenErrorCheckChain: no default response');
         }

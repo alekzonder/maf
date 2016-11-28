@@ -2,7 +2,7 @@
 
 class ErrorCheckChain {
 
-    constructor(error, entity, logger) {
+    constructor (error, entity, logger) {
 
         this._logger = logger;
 
@@ -21,15 +21,15 @@ class ErrorCheckChain {
         this._checks = [];
     }
 
-    setDefault(fn) {
+    setDefault (fn) {
         this._default = fn;
     }
 
-    setParent(parent) {
+    setParent (parent) {
         this._parent = parent;
     }
 
-    ifEntity(entity) {
+    ifEntity (entity) {
         if (typeof entity != 'string') {
             throw new Error('ErrorCheckChain: entity argument must be a string');
         }
@@ -43,7 +43,7 @@ class ErrorCheckChain {
         return entityChain;
     }
 
-    ifCode(code, fn) {
+    ifCode (code, fn) {
 
         var f = () => {
             if (this._error.code !== code) {
@@ -60,7 +60,7 @@ class ErrorCheckChain {
         return this;
     }
 
-    end() {
+    end () {
         if (this._parent) {
             return this._parent;
         }
@@ -68,7 +68,7 @@ class ErrorCheckChain {
         return this;
     }
 
-    check() {
+    check () {
 
         if (this._entity && this._error.entity !== this._entity) {
             return false;
@@ -122,7 +122,7 @@ class ErrorCheckChain {
 
     }
 
-    _debug() {
+    _debug () {
 
         if (this._logger && this._logger.debug && typeof this._logger.debug === 'function') {
             this._logger.debug.apply(this._logger, arguments);

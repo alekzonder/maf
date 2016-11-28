@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
 class FindCursorChain {
 
-    constructor(query, nedb) {
+    constructor (query, nedb) {
         this._query = query;
         this._nedb = nedb;
 
@@ -12,27 +12,27 @@ class FindCursorChain {
         this._skip = null;
     }
 
-    project(fields) {
+    project (fields) {
         this._fields = fields;
         return this;
     }
 
-    sort(sort) {
+    sort (sort) {
         this._sort = sort;
         return this;
     }
 
-    limit(limit) {
+    limit (limit) {
         this._limit = limit;
         return this;
     }
 
-    skip(skip) {
+    skip (skip) {
         this._skip = skip;
         return this;
     }
 
-    count() {
+    count () {
 
         return new Promise((resolve, reject) => {
             this._nedb.count(this._query, (err, count) => {
@@ -47,7 +47,7 @@ class FindCursorChain {
 
     }
 
-    toArray() {
+    toArray () {
 
         return new Promise((resolve, reject) => {
             var cursor = this._nedb.find(this._query, this._fields);

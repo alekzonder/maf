@@ -4,7 +4,7 @@ var ErrorCheckChain = require('../../Error/CheckChain');
 
 class RestApiClientError extends Error {
 
-    constructor(message, code, entity, list) {
+    constructor (message, code, entity, list) {
         super(message);
 
         this.code = null;
@@ -26,7 +26,7 @@ class RestApiClientError extends Error {
         this.checkable = true;
     }
 
-    getCheckChain(defaultResponse, logger) {
+    getCheckChain (defaultResponse, logger) {
         if (!defaultResponse) {
             throw new Error('RestAiErrorCheckChain: no default response');
         }

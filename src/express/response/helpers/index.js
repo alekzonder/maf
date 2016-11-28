@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function(options) {
+module.exports = function (options) {
 
     var continueRequestProcessing = false;
 
@@ -8,7 +8,7 @@ module.exports = function(options) {
         continueRequestProcessing = true;
     }
 
-    return function(req, res, next) {
+    return function (req, res, next) {
 
         res.sendCtxImmediately = !continueRequestProcessing;
 
@@ -24,7 +24,7 @@ module.exports = function(options) {
             this.serverError();
         };
 
-        helpers.serverError = function() {
+        helpers.serverError = function () {
 
             this.ctx = {
                 status: 500,
@@ -44,7 +44,7 @@ module.exports = function(options) {
 
         };
 
-        helpers.notFound = function(message, code, entity) {
+        helpers.notFound = function (message, code, entity) {
 
             if (message instanceof Error) {
                 var error = message;
@@ -75,7 +75,7 @@ module.exports = function(options) {
 
         };
 
-        helpers.result = function(data, metadata) {
+        helpers.result = function (data, metadata) {
 
             var response = {};
 
@@ -98,7 +98,7 @@ module.exports = function(options) {
 
         };
 
-        helpers.badRequest = function(error) {
+        helpers.badRequest = function (error) {
 
             var message = 'Bad Request';
             var code = null;
@@ -184,7 +184,7 @@ module.exports = function(options) {
             return this;
         };
 
-        res.sendCtx = function() {
+        res.sendCtx = function () {
 
             if (!this.ctx) {
                 this.status(500).json({

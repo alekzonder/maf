@@ -8,15 +8,15 @@ var RestApiClientError = require('./Error');
 
 class RestApiClient {
 
-    constructor() {
+    constructor () {
         this._debugger = null;
     }
 
-    setDebugger(debug) {
+    setDebugger (debug) {
         this._debugger = debug;
     }
 
-    get(url, query, options) {
+    get (url, query, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -60,7 +60,7 @@ class RestApiClient {
 
     }
 
-    post(url, body, options) {
+    post (url, body, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -109,7 +109,7 @@ class RestApiClient {
      *
      * @param  {Object} data
      */
-    _logDebug(data) {
+    _logDebug (data) {
 
         if (!this._debugger || !this._debugger.log) {
             return;
@@ -124,7 +124,7 @@ class RestApiClient {
      * @param  {String} name
      * @return {DebugTimer}
      */
-    _createTimer(name) {
+    _createTimer (name) {
         var timer = new DebugTimer('http', name);
 
         timer.onStop((data) => {
@@ -140,7 +140,7 @@ class RestApiClient {
      * @param  {Object} data
      * @return {String}
      */
-    _json(data) {
+    _json (data) {
         return JSON.stringify(data);
     }
 
@@ -150,7 +150,7 @@ class RestApiClient {
      * @param  {Error} error
      * @return {Error}
      */
-    _processError(error) {
+    _processError (error) {
 
         if (error.response &&
             error.response.body &&

@@ -19,7 +19,7 @@ class ModelMongodb {
      * @param  {mongodb} db
      * @param {String} collectionName
      */
-    constructor(db, collectionName) {
+    constructor (db, collectionName) {
         this._db = db;
         this._collectionName = collectionName;
         this._indexes = null;
@@ -35,7 +35,7 @@ class ModelMongodb {
      *
      * @param {Request/Debug} debugger
      */
-    setDebugger(__debugger) {
+    setDebugger (__debugger) {
         this._debugger = __debugger;
     }
 
@@ -44,7 +44,7 @@ class ModelMongodb {
      *
      * @return {Promise}
      */
-    init() {
+    init () {
 
         if (!this._collectionName) {
 
@@ -66,7 +66,7 @@ class ModelMongodb {
      * @param  {Object} options
      * @return {Promise}
      */
-    ensureIndexes(options) {
+    ensureIndexes (options) {
 
         return new Promise((resolve, reject) => {
 
@@ -147,7 +147,7 @@ class ModelMongodb {
      * @param  {Object} data
      * @return {Promise}
      */
-    insertOne(data, options) {
+    insertOne (data, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -201,7 +201,7 @@ class ModelMongodb {
      * @param  {Object} options
      * @return {Object}
      */
-    findOneAndUpdate(filter, update, options) {
+    findOneAndUpdate (filter, update, options) {
 
         var timer = this._createTimer('findOneAndUpdate');
 
@@ -252,7 +252,7 @@ class ModelMongodb {
      * @param {Object} options
      * @return {Promise}
      */
-    findOne(query, options) {
+    findOne (query, options) {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOne');
@@ -280,7 +280,7 @@ class ModelMongodb {
      * @param  {String} id
      * @return {Promise}
      */
-    findOneById(id, options) {
+    findOneById (id, options) {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOneById');
@@ -311,7 +311,7 @@ class ModelMongodb {
      * @param  {Object} fields
      * @return {Promise}
      */
-    find(filter, fields) {
+    find (filter, fields) {
 
         var timer = this._createTimer('find');
 
@@ -354,7 +354,7 @@ class ModelMongodb {
      * @param  {Object} options
      * @return {Promise}
      */
-    update(filter, data, options) {
+    update (filter, data, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -387,7 +387,7 @@ class ModelMongodb {
 
     }
 
-    remove(filter, options) {
+    remove (filter, options) {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('remove');
@@ -421,7 +421,7 @@ class ModelMongodb {
      *
      * @return {Promise}
      */
-    removeOne(filter, options) {
+    removeOne (filter, options) {
         var timer = this._createTimer('removeOne');
         timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
@@ -446,7 +446,7 @@ class ModelMongodb {
      * @param  {Object} options
      * @return {Promise}
      */
-    count(filter, options) {
+    count (filter, options) {
         var timer = this._createTimer('count');
         timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
@@ -473,7 +473,7 @@ class ModelMongodb {
      * @param  {Object} options
      * @return {AggregationCursor}
      */
-    aggregate(pipeline, options) {
+    aggregate (pipeline, options) {
         var timer = this._createTimer('aggregate');
         timer.message = `db.${this._collectionName} pipeline=${this._json(pipeline)} options=${this._json(options)}`;
         timer.stop();
@@ -486,7 +486,7 @@ class ModelMongodb {
      * @private
      * @param  {Object} data
      */
-    _logDebug(data) {
+    _logDebug (data) {
 
         if (!this._debugger || !this._debugger.log) {
             return;
@@ -502,7 +502,7 @@ class ModelMongodb {
      * @param  {String} name
      * @return {DebugTimer}
      */
-    _createTimer(name) {
+    _createTimer (name) {
         var timer = new DebugTimer('mongo', name);
 
         timer.onStop((data) => {
@@ -519,7 +519,7 @@ class ModelMongodb {
      * @param  {Object} data
      * @return {String}
      */
-    _json(data) {
+    _json (data) {
         return JSON.stringify(data);
     }
 

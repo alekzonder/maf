@@ -2,33 +2,33 @@
 
 class ContextUser {
 
-    constructor() {
+    constructor () {
         this._id = null;
         this._profile = null;
         this._group = null;
     }
 
-    setId(id) {
+    setId (id) {
         this._id = id;
     }
 
-    getId() {
+    getId () {
         return this._id;
     }
 
-    setProfile(profile) {
+    setProfile (profile) {
         this._profile = profile;
     }
 
-    getProfile() {
+    getProfile () {
         return this._profile;
     }
 
-    setGroup(group) {
+    setGroup (group) {
         this._group = group;
     }
 
-    getGroup() {
+    getGroup () {
         return this._group;
     }
 

@@ -2,7 +2,7 @@
 
 class DebugTimer {
 
-    constructor(type, name) {
+    constructor (type, name) {
         this._start = new Date().getTime();
 
         this._data = {
@@ -23,27 +23,27 @@ class DebugTimer {
         this._stopCallback = null;
     }
 
-    get type() {
+    get type () {
         return this._data.type;
     }
 
-    set type(type) {
+    set type (type) {
         this._data.type = type;
     }
 
-    get name() {
+    get name () {
         return this._data.name;
     }
 
-    set name(name) {
+    set name (name) {
         this._data.name = name;
     }
 
-    get message()  {
+    get message () {
         return this._data.name;
     }
 
-    set message(message) {
+    set message (message) {
         if (typeof message == 'object') {
             message = JSON.stringify(message);
         }
@@ -51,7 +51,7 @@ class DebugTimer {
         this._data.message = message;
     }
 
-    stop() {
+    stop () {
         var msec = (new Date().getTime()) - this._start;
 
         this._data.time = {
@@ -68,7 +68,7 @@ class DebugTimer {
         return data;
     }
 
-    error(error) {
+    error (error) {
         if (error.message) {
 
             this._data.error = {
@@ -90,11 +90,11 @@ class DebugTimer {
         this.stop();
     }
 
-    toJSON() {
+    toJSON () {
         return this._data;
     }
 
-    onStop(callback) {
+    onStop (callback) {
         this._stopCallback = callback;
     }
 }

@@ -2,7 +2,7 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
-module.exports = function(di, config) {
+module.exports = function (di, config) {
 
     var app = express();
 

@@ -12,7 +12,9 @@
     "build": "npm test && npm run clean && node ./build.js",
     "docs:open": "npm run docs && open ./jsdoc/index.html",
     "docs": "rm -rf ./docs && ./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose",
-    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/func/"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/func/",
+    "lint": "./node_modules/.bin/eslint -c .eslintrc.js src",
+    "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js --fix src"
   },
   "repository": {
     "type": "git",
@@ -48,6 +50,7 @@
     "codeclimate-test-reporter": "^0.4.0",
     "deride": "^1.1.0",
     "docdash": "^0.4.0",
+    "eslint": "^3.11.0",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.2",
     "mocha": "^3.1.2",

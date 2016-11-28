@@ -16,7 +16,7 @@ class Rest {
      * @param  {express} app
      * @param  {Object} config
      */
-    constructor(logger, app, config) {
+    constructor (logger, app, config) {
         this._logger = logger;
         this._app = app;
         this._config = config;
@@ -35,7 +35,7 @@ class Rest {
      *
      * @param {Object} middleware
      */
-    addMiddleware(middleware) {
+    addMiddleware (middleware) {
         // TODO check
         this._middlewares.push(middleware);
     }
@@ -47,7 +47,7 @@ class Rest {
      * @param {maf/Di} di
      * @return {Promise}
      */
-    add(resource, di) {
+    add (resource, di) {
 
         return new Promise((resolve, reject) => {
 
@@ -190,7 +190,7 @@ class Rest {
 
                                 var list = [];
 
-                                _.each(err.details, function(e) {
+                                _.each(err.details, function (e) {
 
                                     list.push({
                                         message: e.message,
@@ -239,7 +239,7 @@ class Rest {
                             if (err) {
                                 var list = [];
 
-                                _.each(err.details, function(e) {
+                                _.each(err.details, function (e) {
 
                                     list.push({
                                         message: e.message,
@@ -339,7 +339,7 @@ class Rest {
      * @param {maf/Di} di
      * @return {Promise}
      */
-    addMany(resources, di) {
+    addMany (resources, di) {
         return new Promise((resolve, reject) => {
 
             var promises = [];
@@ -364,7 +364,7 @@ class Rest {
      *
      * @return {express}
      */
-    init() {
+    init () {
         this._app.options(this._config.baseUrl, (req, res) => {
             res.json(this._globalOptionsResponse);
         });
@@ -379,7 +379,7 @@ class Rest {
      * @param  {String} url
      * @return {String}
      */
-    _getResourceUrl(url) {
+    _getResourceUrl (url) {
 
         if (this._config.baseUrl === '/') {
             return url;

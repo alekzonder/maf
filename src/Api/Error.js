@@ -14,7 +14,7 @@ class ApiError extends Error {
      * @param  {String} entity
      * @param {Array} list
      */
-    constructor(message, code, entity, list) {
+    constructor (message, code, entity, list) {
         super(message);
 
         this.name = 'ApiError';
@@ -36,7 +36,7 @@ class ApiError extends Error {
         this.checkable = true;
     }
 
-    getCheckChain(defaultResponse, logger) {
+    getCheckChain (defaultResponse, logger) {
         if (!defaultResponse) {
             throw new Error('RestAiErrorCheckChain: no default response');
         }

@@ -17,7 +17,7 @@ class ApiAbstract {
      * @param  {Object} models
      * @param  {Object} api
      */
-    constructor(models, api) {
+    constructor (models, api) {
         this._models = models;
         this._api = api;
         this._systemFields = null;
@@ -36,7 +36,7 @@ class ApiAbstract {
      * @param  {Object} options
      * @return {Promise}
      */
-    _validate(data, schema, options) {
+    _validate (data, schema, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -58,7 +58,7 @@ class ApiAbstract {
                 if (err) {
                     var list = [];
 
-                    _.each(err.details, function(e) {
+                    _.each(err.details, function (e) {
                         list.push({message: e.message, path: e.path, type: e.type});
                     });
 
@@ -85,7 +85,7 @@ class ApiAbstract {
      * @param {Object} options
      * @return {Object}
      */
-    validate(data, schema, options) {
+    validate (data, schema, options) {
         return this._validate(data, schema, options);
     }
 
@@ -96,7 +96,7 @@ class ApiAbstract {
      * @param  {Object}  data
      * @return {Boolean}
      */
-    _isEmptyData(data) {
+    _isEmptyData (data) {
         if (!data) {
             return false;
         }
@@ -110,7 +110,7 @@ class ApiAbstract {
      * @param {Object} data
      * @return {Object}
      */
-    clearSystemFields(data) {
+    clearSystemFields (data) {
 
         if (!this._systemFields) {
             return data;

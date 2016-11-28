@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var FindCursorChain = require('./FindCursorChain');
 
@@ -8,7 +8,7 @@ class Nedb {
      * constructor
      * @param  {Object} nedb Nedb database object
      */
-    constructor(nedb) {
+    constructor (nedb) {
         this._nedb = nedb;
     }
 
@@ -17,7 +17,7 @@ class Nedb {
      * @param  {String} name
      * @return {this}
      */
-    collection(name) {
+    collection (name) {
         return this;
     }
 
@@ -26,7 +26,7 @@ class Nedb {
      * @param  {String} name
      * @return {Boolean}
      */
-    indexExists(name) {
+    indexExists (name) {
         // no fails for index duplication in nedb
         return false;
     }
@@ -37,7 +37,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    createIndex(fields, options) {
+    createIndex (fields, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -80,7 +80,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    insertOne(data, options) {
+    insertOne (data, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -91,7 +91,7 @@ class Nedb {
                     if (err.errorType && err.errorType == 'uniqueViolated') {
                         err.code = 11000;
                     }
-                    
+
                     reject(err);
                     return;
                 }
@@ -113,7 +113,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    findOneAndUpdate(filter, update, options) {
+    findOneAndUpdate (filter, update, options) {
 
         return new Promise((resolve, reject) => {
             var nedbOptions = {
@@ -147,7 +147,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    findOne(query, options) {
+    findOne (query, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -172,7 +172,7 @@ class Nedb {
                     return;
                 }
 
-                if (docs && docs.length)  {
+                if (docs && docs.length) {
                     resolve(docs[0]);
                 } else {
                     resolve(null);
@@ -189,7 +189,7 @@ class Nedb {
      * @param  {Object} query
      * @return {Promise}
      */
-    find(query) {
+    find (query) {
         return new FindCursorChain(query, this._nedb);
     }
 
@@ -201,7 +201,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    update(selector, document, options) {
+    update (selector, document, options) {
 
         return new Promise((resolve, reject) => {
             var nedbOptions = {
@@ -230,7 +230,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    remove(selector, options) {
+    remove (selector, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -254,7 +254,7 @@ class Nedb {
      * @param  {Object} options
      * @return {Promise}
      */
-    count(query, options) {
+    count (query, options) {
 
         return new Promise((resolve, reject) => {
 
@@ -276,7 +276,7 @@ class Nedb {
      *
      * @return {Promise}
      */
-    aggregate() {
+    aggregate () {
         return new Promise((resolve, reject) => {
             reject(new Error('nedb do\'t support aggregate'));
         });
