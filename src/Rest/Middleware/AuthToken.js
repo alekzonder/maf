@@ -46,8 +46,6 @@ module.exports = (logger, di) => {
 
             var di = req.di;
 
-            var promise;
-
             if (checkToken) {
                 if (!di.api || !di.api.authTokens || !di.api.authTokens.check) {
                     logger.fatal('no valid di.api.authTokens for AuthToken middleware');

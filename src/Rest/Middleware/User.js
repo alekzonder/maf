@@ -1,6 +1,4 @@
-var joi = require('joi');
-
-module.exports = (logger, di) => {
+module.exports = () => {
 
     return {
 

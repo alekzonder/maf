@@ -128,8 +128,6 @@ class Rest {
                     afterSchemaCheck: []
                 };
 
-                var middlewaresAfterSchemaCheck = [];
-
                 if (this._middlewares) {
 
                     _.each(this._middlewares, (middleware) => {
@@ -289,7 +287,7 @@ class Rest {
 
                 });
 
-                routeArgs.push((req, res, next) => {
+                routeArgs.push((req, res) => {
 
                     if (!res.ctx) {
                         res.sendCtxNow().notFound('resource not found', 'resource_not_found');

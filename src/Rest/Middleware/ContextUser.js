@@ -1,7 +1,6 @@
-var joi = require('joi');
 var ContextUser = require('../Context/User');
 
-module.exports = (logger, di) => {
+module.exports = () => {
 
     return {
 

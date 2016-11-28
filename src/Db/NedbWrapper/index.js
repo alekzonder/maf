@@ -14,19 +14,19 @@ class Nedb {
 
     /**
      * collection method
-     * @param  {String} name
+     *
      * @return {this}
      */
-    collection (name) {
+    collection (/* name */) {
         return this;
     }
 
     /**
      * check if index exists
-     * @param  {String} name
+     *
      * @return {Boolean}
      */
-    indexExists (name) {
+    indexExists (/* name */) {
         // no fails for index duplication in nedb
         return false;
     }
@@ -77,10 +77,9 @@ class Nedb {
      * insert one record
      *
      * @param  {Object} data
-     * @param  {Object} options
      * @return {Promise}
      */
-    insertOne (data, options) {
+    insertOne (data /*, options */) {
 
         return new Promise((resolve, reject) => {
 
@@ -251,10 +250,9 @@ class Nedb {
      * count
      *
      * @param  {Object} query
-     * @param  {Object} options
      * @return {Promise}
      */
-    count (query, options) {
+    count (query /*, options */) {
 
         return new Promise((resolve, reject) => {
 

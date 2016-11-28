@@ -169,7 +169,7 @@ module.exports = {
 
         // http://eslint.org/docs/rules/complexity
         'complexity': ['error', {
-            max: 20
+            max: 10
         }],
 
         // http://eslint.org/docs/rules/max-depth
@@ -188,7 +188,7 @@ module.exports = {
         }],
 
         // http://eslint.org/docs/rules/max-statements
-        'max-statements': ['error', {
+        'max-statements': ['warn', {
             max: 20 // TODO 10
         }]
 

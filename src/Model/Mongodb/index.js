@@ -33,7 +33,7 @@ class ModelMongodb {
     /**
      * set debugger object
      *
-     * @param {Request/Debug} debugger
+     * @param {Request/Debug} __debugger
      */
     setDebugger (__debugger) {
         this._debugger = __debugger;
@@ -63,10 +63,9 @@ class ModelMongodb {
     /**
      * ensure collection indexes
      *
-     * @param  {Object} options
      * @return {Promise}
      */
-    ensureIndexes (options) {
+    ensureIndexes (/* options */) {
 
         return new Promise((resolve, reject) => {
 
@@ -147,7 +146,7 @@ class ModelMongodb {
      * @param  {Object} data
      * @return {Promise}
      */
-    insertOne (data, options) {
+    insertOne (data/*, options*/) {
 
         return new Promise((resolve, reject) => {
 
@@ -278,6 +277,7 @@ class ModelMongodb {
      * get one by id
      *
      * @param  {String} id
+     * @param {Object} options
      * @return {Promise}
      */
     findOneById (id, options) {
@@ -307,7 +307,7 @@ class ModelMongodb {
     /**
      * search by params
      *
-     * @param  {Object} params
+     * @param  {Object} filter
      * @param  {Object} fields
      * @return {Promise}
      */

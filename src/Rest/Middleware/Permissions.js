@@ -1,6 +1,5 @@
-var joi = require('joi');
 
-module.exports = (logger) => {
+module.exports = () => {
 
     return {
 
@@ -9,7 +8,7 @@ module.exports = (logger) => {
         middleware: (req, res, next) => {
 
             if (req.di.config.private) {
-                req.checkPermission = (permission, params) => {
+                req.checkPermission = () => {
                     return new Promise((resolve) => {
                         resolve(true);
                     });
@@ -21,7 +20,7 @@ module.exports = (logger) => {
 
                         req.di.logger.error('no req.user for checkPermission helper');
 
-                        return new Promise((resolve, reject) => {
+                        return new Promise((resolve) => {
                             resolve(false);
                         });
                     }

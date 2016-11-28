@@ -20,7 +20,6 @@ var DebugTimer = require(path.join(__dirname, '..', '..', 'Debug', 'Timer'));
 class ModelTingodb {
 
     /**
-     * @param  {Object} config
      * @param  {mongodb} db
      */
     constructor (db) {
@@ -56,7 +55,7 @@ class ModelTingodb {
     /**
      * set debugger object
      *
-     * @param {Request/Debug} debugger
+     * @param {Request/Debug} __debugger
      */
     setDebugger (__debugger) {
         this._debugger = __debugger;
@@ -135,6 +134,7 @@ class ModelTingodb {
      * insert new one
      *
      * @param  {Object} data
+     * @param {Object} options
      * @return {Promise}
      */
     insertOne (data, options) {
@@ -273,6 +273,7 @@ class ModelTingodb {
      * get one by id
      *
      * @param  {String} id
+     * @param {Object} options
      * @return {Promise}
      */
     findOneById (id, options) {
@@ -302,7 +303,7 @@ class ModelTingodb {
     /**
      * search by params
      *
-     * @param  {Object} params
+     * @param  {Object} filter
      * @param  {Object} fields
      * @return {Promise}
      */
@@ -363,6 +364,7 @@ class ModelTingodb {
      *
      * @param  {Object} filter
      * @param  {Object} data
+     * @param  {Object} options
      * @return {Promise}
      */
     update (filter, data, options) {
