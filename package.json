@@ -16,7 +16,8 @@
     "test:func": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/func/",
     "test:unit": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test/unit/",
     "lint": "./node_modules/.bin/eslint -c .eslintrc.js src",
-    "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js --fix src"
+    "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js --fix src",
+    "changelog": "gitchangelog show > ./CHANGELOG.md"
   },
   "repository": {
     "type": "git",
