@@ -7,6 +7,10 @@
 
 [![NPM](https://nodei.co/npm/maf.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/maf/)
 
-# LICENSE
+## documentation
+
+### [esdoc](http://alekzonder.github.io/maf/latest/esdoc/)
+
+## LICENSE
 
 MIT
