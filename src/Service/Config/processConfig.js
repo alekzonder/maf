@@ -1,17 +1,8 @@
-var fs = require('fs');
+module.exports = function (logger, options, config) {
 
-module.exports = function (defaultConfigPath) {
+    return new Promise((resolve) => {
 
-    var configPath = process.env.CONFIG ? process.env.CONFIG : defaultConfigPath;
-
-    return new Promise((resolve, reject) => {
-
-        if (!fs.existsSync(configPath)) {
-            reject(new Error('no config: ' + configPath));
-            return;
-        }
-
-        var config = require(configPath);
+        logger.trace('process config');
 
         if (process.env.HOST) {
             config.host = process.env.HOST;
@@ -28,6 +19,7 @@ module.exports = function (defaultConfigPath) {
         config.NODE_ENV = (process.env.NODE_ENV) ? process.env.NODE_ENV : 'production';
 
         resolve(config);
+
     });
 
 };
