@@ -1,6 +1,6 @@
 # Changelog
 
-## %%version%% (unreleased)
+## v0.5.0 (2016-12-01)
 
 ### New
 
