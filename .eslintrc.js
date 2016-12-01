@@ -7,7 +7,7 @@ module.exports = {
     },
 
     globals: {
-        Promise: true
+        Promise: false
     },
 
     env: {

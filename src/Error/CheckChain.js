@@ -8,7 +8,7 @@ class ErrorCheckChain {
     /**
      * @constructor
      * @param  {Error} error
-     * @param  {string} entity
+     * @param  {String} entity
      * @param  {logger} logger
      */
     constructor (error, entity, logger) {
@@ -34,6 +34,7 @@ class ErrorCheckChain {
      * set default check callback
      *
      * @param {Function} fn
+     * @return {this}
      */
     setDefault (fn) {
         this._default = fn;
@@ -52,15 +53,15 @@ class ErrorCheckChain {
     /**
      * create new checkChain for entity
      *
-     * @param  {string} entity
-     * @return {CheckChain}
+     * @param  {String} entity
+     * @return {ErrorCheckChain}
      */
     ifEntity (entity) {
         if (typeof entity !== 'string') {
             throw new Error('ErrorCheckChain: entity argument must be a string');
         }
 
-        var entityChain = new CheckChain(this._error, entity, this._logger);
+        var entityChain = new ErrorCheckChain(this._error, entity, this._logger);
 
         entityChain.setParent(this);
 
@@ -79,7 +80,7 @@ class ErrorCheckChain {
     ifCode (code, fn) {
 
         if (typeof fn !== 'function') {
-            throw new Error('MazaiErrorCheckChain: fn argument must be a function');
+            throw new Error('ErrorCheckChain: fn argument must be a function');
         }
 
         var f = () => {
@@ -121,52 +122,60 @@ class ErrorCheckChain {
             return false;
         }
 
-        var result = null,
-            r = false;
-
         for (var i in this._checks) {
-
-            this._debug(`check chain for entity = ${this._entity}, step = ${i}`);
 
             var check = this._checks[i];
 
-            if (check instanceof CheckChain) {
-                r = check.check();
+            this._debug(`check chain for entity = ${this._entity}, step = ${i}`);
 
-                if (r) {
-                    result = true;
-                    break;
-                }
-
-            } else if (typeof check === 'function') {
-
-                this._debug(`check function entity = ${this._entity}, step = ${i}`);
-
-                r = check();
-
-                if (r) {
-                    result = true;
-                    r(this._error);
-                    break;
-                }
-            } else {
+            if (this._isValidCheck(i, check) === false) {
                 throw new Error('ErrorCheckChain: check is not a function');
+            }
+
+            if (this._ifInstanceOfCheckChain(i, check)) {
+                return true;
+            } else if (this._ifFunction(i, check)) {
+                return true;
             }
 
         }
 
-        if (result) {
-            return true;
-        } else if (!this._entity && this._default) {
-            this._debug('ErrorCheckChain: using default callback function');
-            this._default(this._error);
-            return true;
-        } else if (!this._entity && !this._default) {
-            throw new Error('ErrorCheckChain: no default callback function');
-        } else {
-            return false;
+        if (!this._entity) {
+
+            if (this._default) {
+                this._debug('ErrorCheckChain: using default callback function');
+                this._default(this._error);
+                return true;
+            } else {
+                throw new Error('ErrorCheckChain: no default callback function');
+            }
+
         }
 
+
+        return false;
+
+    }
+
+    _isValidCheck (i, check) {
+        return check instanceof ErrorCheckChain || typeof check === 'function';
+    }
+
+    _ifInstanceOfCheckChain (i, check) {
+        return check instanceof ErrorCheckChain && check.check();
+    }
+
+    _ifFunction (i, check) {
+        this._debug(`check function entity = ${this._entity}, step = ${i}`);
+
+        var fnResult = check();
+
+        if (fnResult) {
+            fnResult(this._error);
+            return true;
+        }
+
+        return false;
     }
 
     /**
