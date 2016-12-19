@@ -132,8 +132,15 @@ module.exports = function (logger, options) {
                 resolve(config);
 
             })
-            .catch((error) => {
-                reject(ConfigError.ensureError(error));
+            .catch((rawError) => {
+                var error = ConfigError.ensureError(rawError);
+
+                if (ConfigError.is(ConfigError.CODES.CONSUL_ECONNREFUSED, error)) {
+                    logger.error(error);
+                    resolve(null);
+                } else {
+                    reject(error);
+                }
             });
 
     });
