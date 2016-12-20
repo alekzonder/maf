@@ -3,7 +3,7 @@
 var path = require('path');
 
 var ModelError = require(path.join(__dirname, '..', 'Error'));
-var ModelErrorCodes = require(path.join(__dirname, '..', 'ErrorCodes'));
+// var ModelErrorCodes = require(path.join(__dirname, '..', 'ErrorCodes'));
 
 var FindCursorChain = require(path.join(__dirname, 'FindCursorChain'));
 
@@ -27,7 +27,8 @@ class ModelMongodb {
 
         this._debugger = null;
 
-        this.errorCodes = ModelErrorCodes;
+        this.Error = ModelError;
+        this.errorCodes = ModelError.CODES;
     }
 
     /**
@@ -47,12 +48,7 @@ class ModelMongodb {
     init () {
 
         if (!this._collectionName) {
-
-            throw new ModelError(
-                'no collection name for model',
-                ModelErrorCodes.NO_COLLECTION_NAME
-            );
-
+            throw new ModelError(ModelError.CODES.NO_COLLECTION_NAME);
         }
 
         this._collection = this._db.collection(this._collectionName);
@@ -79,13 +75,19 @@ class ModelMongodb {
             for (var i in this._indexes) {
 
                 if (i in this._indexes === false) {
-                    throw new ModelError('no index data for index ' + i);
+                    throw new ModelError(
+                        this.ErrorCodes.INVALID_ENSURE_INDEXES,
+                        'no index data for index ' + i
+                    );
                 }
 
                 var index = this._indexes[i];
 
                 if ('options' in index === false || 'name' in index.options === false) {
-                    throw new ModelError('no options.name for index ' + i);
+                    throw new ModelError(
+                        this.ErrorCodes.INVALID_ENSURE_INDEXES,
+                        'no options.name for index ' + i
+                    );
                 }
 
                 existsPromises.push(
@@ -127,7 +129,7 @@ class ModelMongodb {
                             resolve({collection: this._collectionName, indexes: data});
                         })
                         .catch((error) => {
-                            reject(error);
+                            reject(this.Error.ensureError(error));
                         });
 
                 })
@@ -175,8 +177,8 @@ class ModelMongodb {
                         if (error.code && error.code === 11000) {
                             // already exists
                             e = new ModelError(
-                                'record with id = ' + data.id + ' already exists',
-                                ModelErrorCodes.ALREADY_EXISTS
+                                this.Error.CODES.ALREADY_EXISTS,
+                                'record with id = ' + data.id + ' already exists'
                             );
                         } else {
                             e = error;
@@ -237,7 +239,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
         });
 
@@ -268,7 +270,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
         });
     }
@@ -298,7 +300,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });
@@ -336,7 +338,7 @@ class ModelMongodb {
                     })
                     .catch((error) => {
                         timer.error(error.message);
-                        reject(error);
+                        reject(this.Error.ensureError(error));
                     });
 
             });
@@ -380,7 +382,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });
@@ -406,7 +408,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });
@@ -433,7 +435,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
         });
 
@@ -459,7 +461,7 @@ class ModelMongodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });

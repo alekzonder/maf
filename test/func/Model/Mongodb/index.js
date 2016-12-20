@@ -104,7 +104,7 @@ describe('Model/Mongodb', function() {
                 })
                 .catch((error) => {
                     assert.equal(error.message, 'record with id = 1 already exists');
-                    assert.equal(error.code, 'alreadyExists');
+                    assert.equal(error.code, model.errorCodes.ALREADY_EXISTS);
                     done();
                 });
         });

@@ -1,5 +1,8 @@
 'use strict';
 
+var path = require('path');
+
+var ModelError = require(path.join(__dirname, '..', 'Error'));
 
 class FindCursorChain {
 
@@ -56,7 +59,7 @@ class FindCursorChain {
 
         for (var name in data) {
             if (!this[name]) {
-                throw new Error(`no method "${name}" in maf/Model/FindCursorChain`);
+                throw new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_METHOD, {name: name});
             }
 
             this[name](data[name]);
@@ -67,7 +70,7 @@ class FindCursorChain {
 
     exec () {
         if (!this._execCallback) {
-            throw new Error('no callback for FindCursorChain');
+            throw new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_CALLBACK);
         }
 
         var debugMessage = `${this._collection.namespace}: db.${this._collection.collectionName}${this._debugMessage}`;

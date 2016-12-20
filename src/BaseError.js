@@ -1,8 +1,6 @@
-var path = require('path');
-
 var terror = require('terror');
 
-var ErrorCheckChain = require(path.resolve(`${__dirname}/Error/CheckChain`));
+var ErrorCheckChain = require('./Error/CheckChain');
 
 terror.prototype.checkable = true;
 
