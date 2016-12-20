@@ -4,6 +4,8 @@ var _ = require('lodash');
 var joi = require('joi');
 var joiToJsonSchema = require('joi-to-json-schema');
 
+var RestError = require('./Error');
+
 /**
  * @class
  */
@@ -28,6 +30,8 @@ class Rest {
         };
 
         this._middlewares = [];
+
+        this.Error = RestError;
     }
 
     /**
@@ -52,12 +56,12 @@ class Rest {
         return new Promise((resolve, reject) => {
 
             if (!resource.resource) {
-                reject(new Error('no resource in module'));
+                reject(new RestError(this.Error.CODES.NO_RESOURCES));
                 return;
             }
 
             if (!resource.methods) {
-                reject(new Error('no methods in module'));
+                reject(new RestError(this.Error.CODES.NO_METHODS));
                 return;
             }
 
@@ -74,7 +78,14 @@ class Rest {
             _.each(resource.methods, (methodData, method) => {
 
                 if (!methodData.callback) {
-                    var err = new Error(`no callback in method ${method} ${resource.resource}`);
+                    var err = new RestError(
+                        this.Error.CODES.NO_CALLBACK_IN_METHOD,
+                        {
+                            method: method,
+                            resource: resource.resource
+                        }
+                    );
+
                     this._logger.error(err);
                     return;
                 }
@@ -82,8 +93,13 @@ class Rest {
                 var lcMethod = method.toLowerCase();
 
                 if (!this._app[lcMethod]) {
-                    var error = new Error(
-                        `no method "${lcMethod}" in app for resource ${method} ${resource.resource}`
+                    var error = new RestError(
+                        this.Error.CODES.NO_METHOD_IN_RESOURCES,
+                        {
+                            lcMethod: lcMethod,
+                            method: method,
+                            resource: resource.resource
+                        }
                     );
 
                     this._logger.error(error);
@@ -133,8 +149,11 @@ class Rest {
                     _.each(this._middlewares, (middleware) => {
 
                         if (['afterSchemaCheck'].indexOf(middleware.position) === -1) {
-                            var e = new Error(
-                                `unknown maf/Rest middleware position: ${middleware.position}`
+                            var e = new RestError(
+                                this.Error.CODES.UNKNOWN_REST_MIDDLEWARE_POSITION,
+                                {
+                                    position: middleware.position
+                                }
                             );
 
                             this._logger.fatal(e);
@@ -198,10 +217,11 @@ class Rest {
 
                                 });
 
-                                var e = new Error('invalid data');
+                                var e = new RestError(
+                                    this.Error.CODES.INVALID_DATA,
+                                    'invalid data'
+                                );
 
-                                e.code = 'invalidData';
-                                e.status = 400;
                                 e.list = list;
 
                                 res.sendCtxNow().badRequest(e);
@@ -247,10 +267,11 @@ class Rest {
 
                                 });
 
-                                var e = new Error('invalid body');
+                                var e = new RestError(
+                                    this.Error.CODES.INVALID_DATA,
+                                    'invalid body'
+                                );
 
-                                e.code = 'invalidData';
-                                e.status = 400;
                                 e.list = list;
 
                                 res.sendCtxNow().badRequest(e);

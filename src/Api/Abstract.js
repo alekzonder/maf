@@ -4,7 +4,6 @@ var joi = require('joi');
 var _ = require('lodash');
 
 var ApiError = require('./Error');
-var ApiErrorCodes = require('./ErrorCodes');
 
 /**
  * @abstract
@@ -21,7 +20,8 @@ class ApiAbstract {
         this._api = api;
         this._systemFields = null;
 
-        this.errorCodes = {};
+        this.Error = ApiError;
+        this.errorCodes = ApiError.CODES;
     }
 
     /**
@@ -61,9 +61,7 @@ class ApiAbstract {
                         list.push({message: e.message, path: e.path, type: e.type});
                     });
 
-                    var e = new ApiError('invalid data');
-
-                    e.code = ApiErrorCodes.INVALID_DATA;
+                    var e = new ApiError(this.Error.CODES.INVALID_DATA);
                     e.list = list;
 
                     reject(e);
