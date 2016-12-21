@@ -1,14 +1,11 @@
 'use strict';
 
-var joi = require('joi');
 var _ = require('lodash');
+var uuid = require('uuid');
 
-var ApiError = require('./Error');
+var BaseAbstract = require('./BaseAbstract');
 
-/**
- * @abstract
- */
-class ApiAbstract {
+class Abstract extends BaseAbstract {
 
     /**
      * @constructor
@@ -16,106 +13,95 @@ class ApiAbstract {
      * @param  {Object} api
      */
     constructor (models, api) {
-        this._models = models;
-        this._api = api;
-        this._systemFields = null;
+        super(models, api);
 
-        this.Error = ApiError;
-        this.errorCodes = ApiError.CODES;
+        this._creationSchema = null;
+        this._modificationSchema = null;
     }
 
     /**
-     * validate data by schema
+     * get creation schema
      *
-     * using joi module
+     * @return {Object}
+     */
+    getCreationSchema () {
+        return _.cloneDeep(this._creationSchema);
+    }
+
+    /**
+     * get modification schema
      *
-     * @private
-     * @param  {Object} data
-     * @param  {Object} schema
-     * @param  {Object} options
+     * @return {Object}
+     */
+    getModificationSchema () {
+        return _.cloneDeep(this._modificationSchema);
+    }
+
+    /**
+     * validate creation data by schema
+     *
+     * @param {Object} data
+     * @param {Object} options
      * @return {Promise}
      */
-    _validate (data, schema, options) {
+    _validateCreation (data, options) {
+        return this._validate(data, this._creationSchema, options);
+    }
 
-        return new Promise((resolve, reject) => {
+    /**
+     * validate modification data by schema
+     *
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise}
+     */
+    _validateModification (data, options) {
+        return this._validate(data, this._modificationSchema, options);
+    }
 
-            if (!options) {
-                options = {};
-            }
+    /**
+     * get uuid
+     *
+     * @return {String}
+     */
+    _generateUuid () {
+        return uuid.v4();
+    }
 
-            var joiOptions = {
-                convert: true,
-                abortEarly: false
-            };
+    /**
+     * get current timestamp
+     *
+     * @return {Number}
+     */
+    _time () {
+        var date = new Date();
+        return Math.round(date.getTime() / 1000);
+    }
 
-            if (options.allowUnknown) {
-                joiOptions.allowUnknown = options.allowUnknown;
-            }
+    /**
+     * get current timestamp with microseconds
+     *
+     * @return {Number}
+     */
+    _microtime () {
+        return (new Date()).getTime();
+    }
 
-            joi.validate(data, schema, joiOptions, (err, data) => {
+    /**
+      * prepare fields
+      *
+      * @param  {Object} fields
+      * @return {Object}
+      */
+    _prepareFields (fields) {
+        var result = {};
 
-                if (err) {
-                    var list = [];
-
-                    _.each(err.details, function (e) {
-                        list.push({message: e.message, path: e.path, type: e.type});
-                    });
-
-                    var e = new ApiError(this.Error.CODES.INVALID_DATA);
-                    e.list = list;
-
-                    reject(e);
-                    return;
-                }
-
-                resolve(data);
-            });
+        _.each(fields, (f) => {
+            result[f] = 1;
         });
 
-    }
-
-    /**
-     * validate object by schema
-     *
-     * @param {Object} data
-     * @param {Object} schema
-     * @param {Object} options
-     * @return {Object}
-     */
-    validate (data, schema, options) {
-        return this._validate(data, schema, options);
-    }
-
-    /**
-     * is empty data
-     *
-     * @private
-     * @param  {Object}  data
-     * @return {Boolean}
-     */
-    _isEmptyData (data) {
-        if (!data) {
-            return false;
-        }
-
-        return _.keys(data).length ? false : true;
-    }
-
-    /**
-     * clear system fields in object
-     *
-     * @param {Object} data
-     * @return {Object}
-     */
-    clearSystemFields (data) {
-
-        if (!this._systemFields) {
-            return data;
-        }
-
-        return _.omit(data, this._systemFields);
+        return result;
     }
 }
 
-
-module.exports = ApiAbstract;
+module.exports = Abstract;
