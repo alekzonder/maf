@@ -4,14 +4,16 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 
 var init = {
-    nprof: require('nprof/express/register')
+    nprof: require('nprof/express/register'),
+    expressRouteList: require(path.resolve(__dirname, '../express/init-route-list'))
 };
 
 var middlewares = {
     startTime: require(path.resolve(__dirname, '../express/start-time')),
     responseHelpers: require(path.resolve(__dirname, '../express/response/helpers')),
     debugParam: require(path.resolve(__dirname, '../express/debug-param')),
-    di: require(path.resolve(__dirname, '../express/di'))
+    di: require(path.resolve(__dirname, '../express/di')),
+    requestId: require(path.resolve(__dirname, '../express/request/id'))
 };
 
 module.exports = function (di, config) {
@@ -34,6 +36,10 @@ module.exports = function (di, config) {
 
     app.disable('x-powered-by');
     app.disable('etag');
+
+    app.use(middlewares.requestId());
+
+    init.expressRouteList(app);
 
     app.use(middlewares.startTime());
 
@@ -70,8 +76,6 @@ module.exports = function (di, config) {
     }
 
     app.use(middlewares.di(di.logger, di, initDiFn));
-
-    app.use(require('../express/request/id')());
 
     init.nprof(di.logger, app, di.config.nprof);
 
