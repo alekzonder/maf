@@ -79,12 +79,13 @@ class Rest {
 
                 if (!methodData.callback) {
                     var err = new RestError(
-                        this.Error.CODES.NO_CALLBACK_IN_METHOD,
-                        {
-                            method: method,
-                            resource: resource.resource
-                        }
+                        this.Error.CODES.NO_CALLBACK_IN_METHOD
                     );
+
+                    err.bind({
+                        method: method,
+                        resource: resource.resource
+                    });
 
                     this._logger.error(err);
                     return;
@@ -94,13 +95,14 @@ class Rest {
 
                 if (!this._app[lcMethod]) {
                     var error = new RestError(
-                        this.Error.CODES.NO_METHOD_IN_RESOURCES,
-                        {
-                            lcMethod: lcMethod,
-                            method: method,
-                            resource: resource.resource
-                        }
+                        this.Error.CODES.NO_METHOD_IN_RESOURCES
                     );
+
+                    error.bind({
+                        lcMethod: lcMethod,
+                        method: method,
+                        resource: resource.resource
+                    });
 
                     this._logger.error(error);
                     return;
@@ -150,11 +152,12 @@ class Rest {
 
                         if (['afterSchemaCheck'].indexOf(middleware.position) === -1) {
                             var e = new RestError(
-                                this.Error.CODES.UNKNOWN_REST_MIDDLEWARE_POSITION,
-                                {
-                                    position: middleware.position
-                                }
+                                this.Error.CODES.UNKNOWN_REST_MIDDLEWARE_POSITION
                             );
+
+                            e.bind({
+                                position: middleware.position
+                            });
 
                             this._logger.fatal(e);
                             return reject(e);

@@ -1,8 +1,8 @@
 var path = require('path');
 
-var terror = require(path.resolve(`${__dirname}/../../Error`));
+var BaseError = require(path.resolve(`${__dirname}/../../BaseError`));
 
-module.exports = terror.create('ConfigError', {
+module.exports = BaseError.create('ConfigError', {
     NO_CONFIG_PATH: 'no config path',
     NO_CONFIG: 'no config: %path%',
     INVALID_CONFIG: 'invalid config format',

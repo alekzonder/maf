@@ -15,6 +15,8 @@ module.exports = function (logger) {
 
                 if (logger) {
                     logger.error(error);
+                } else {
+                    console.log(error);
                 }
 
                 res.status(500).json({

@@ -1,8 +1,32 @@
+var path = require('path');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
+var init = {
+    nprof: require('nprof/express/register')
+};
+
+var middlewares = {
+    startTime: require(path.resolve(__dirname, '../express/start-time')),
+    responseHelpers: require(path.resolve(__dirname, '../express/response/helpers')),
+    debugParam: require(path.resolve(__dirname, '../express/debug-param')),
+    di: require(path.resolve(__dirname, '../express/di'))
+};
+
 module.exports = function (di, config) {
+
+    process.on('unhandledRejection', (error) => {
+        di.logger.fatal(error);
+    });
+
+    process.on('uncaughtException', (error) => {
+        di.logger.fatal(error);
+    });
+
+    process.on('rejectionHandled', (error) => {
+        di.logger.fatal(error);
+    });
 
     var app = express();
 
@@ -11,42 +35,45 @@ module.exports = function (di, config) {
     app.disable('x-powered-by');
     app.disable('etag');
 
+    app.use(middlewares.startTime());
+
     app.use(cors({
         preflightContinue: true,
         methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
     }));
 
-    app.use(require('../express/response/helpers')({continue: true}));
+    app.use(middlewares.responseHelpers({
+        continue: true
+    }));
 
-    app.use(bodyParser.json({type: '*/*'}));
+    app.use(bodyParser.json({
+        type: '*/*'
+    }));
 
     if (config && config.bodyParser && bodyParser.urlencoded) {
-        app.use(bodyParser.urlencoded({extended: false}));
+        app.use(bodyParser.urlencoded({
+            extended: false
+        }));
     }
 
-    app.use(require('../express/body-parser/json-error')());
+    app.use(require('../express/body-parser/json-error')(di.logger));
+
+    app.use(middlewares.debugParam());
+
+    var initDiFn = null;
+
+    if (
+        config && config.requestDebug &&
+        typeof config.requestDebug.initDiFn === 'function'
+    ) {
+        initDiFn = config.requestDebug.initDiFn;
+    }
+
+    app.use(middlewares.di(di.logger, di, initDiFn));
 
     app.use(require('../express/request/id')());
 
-    // detect _debug
-    app.use((req, res, next) => {
-
-        if (req.query.debug) {
-            delete req.query.debug;
-        }
-
-        if (req.body && req.body.debug) {
-            delete req.body.debug;
-        }
-
-        if (typeof req.query._debug != 'undefined') {
-            delete req.query._debug;
-            req._debug = true;
-        }
-
-        next();
-
-    });
+    init.nprof(di.logger, app, di.config.nprof);
 
     return app;
 
