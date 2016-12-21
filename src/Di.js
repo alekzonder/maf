@@ -110,6 +110,24 @@ class Di {
         return this._connections[name];
     }
 
+    /**
+     * get all connections
+     *
+     * @return {Object}
+     */
+    getConnections () {
+        return this._connections;
+    }
+
+    /**
+     * set connections
+     *
+     * @param {Object} connections
+     */
+    setConnections (connections) {
+        this._connections = connections;
+    }
+
 }
 
 module.exports = Di;
