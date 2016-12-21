@@ -59,7 +59,9 @@ class FindCursorChain {
 
         for (var name in data) {
             if (!this[name]) {
-                throw new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_METHOD, {name: name});
+                var error = new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_METHOD);
+                error.bind({name: name});
+                throw error;
             }
 
             this[name](data[name]);
