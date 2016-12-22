@@ -16,6 +16,12 @@ var BaseCrudError = ApiError.extendCodes({
 
 class ApiAbstract extends Abstract {
 
+    /**
+     * @constructor
+     * @param {Object} models
+     * @param {Object} api
+     * @param {String} modelName
+     */
     constructor (models, api, modelName) {
         super(models, api);
 
@@ -34,6 +40,13 @@ class ApiAbstract extends Abstract {
 
     }
 
+    /**
+     * create new document
+     *
+     * @param {Object} data
+     * @param {Object} options
+     * @return {Promise}
+     */
     create (data, options) {
 
         return new Promise((resolve, reject) => {
@@ -69,6 +82,13 @@ class ApiAbstract extends Abstract {
 
     }
 
+    /**
+     * search documents
+     *
+     * @param {Object} filter
+     * @param {Object} fields
+     * @return {Chain}
+     */
     find (filter, fields) {
 
         var chain = new Chain({
@@ -100,6 +120,12 @@ class ApiAbstract extends Abstract {
         return chain;
     }
 
+    /**
+     * set api entity name
+     *
+     * @private
+     * @param {String} name
+     */
     _setEntityName (name) {
         this.entity = name;
         this.Error = this.Error.createWithEntityName(name);
@@ -125,7 +151,6 @@ class ApiAbstract extends Abstract {
 
         return this._models[this._modelName];
     }
-
 
 }
 
