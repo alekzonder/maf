@@ -103,7 +103,7 @@ describe('Model/Mongodb', function() {
                     return model.insertOne(data);
                 })
                 .catch((error) => {
-                    assert.equal(error.message, 'record with id = 1 already exists');
+                    assert.equal(error.message, 'document already exists');
                     assert.equal(error.code, model.Error.CODES.ALREADY_EXISTS);
                     done();
                 });
