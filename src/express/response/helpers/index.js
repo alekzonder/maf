@@ -77,7 +77,7 @@ module.exports = function (options) {
 
         helpers.result = function (data, metadata) {
 
-            if (typeof data === 'object' && data.result && data.metadata) {
+            if (data && typeof data === 'object' && data.result && data.metadata) {
                 metadata = data.metadata;
                 data = data.result;
             }
