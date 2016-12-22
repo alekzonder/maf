@@ -3,10 +3,11 @@
 var BaseError = require('../BaseError');
 
 var ErrorCodes = {
-    INVALID_DATA: 'invalid data',
+    NO_SYSTEM_FIELDS: 'no system fields',
     ALREADY_EXISTS: 'document already exists',
     NOT_FOUND: 'not found',
-    NO_SYSTEM_FIELDS: 'no system fields'
+    INVALID_DATA: 'invalid data',
+    FORBIDDEN: 'forbidden'
 };
 
 var ApiError = BaseError.create('ApiError', ErrorCodes);

@@ -1,5 +1,6 @@
 var path = require('path');
 
+var _ = require(path.resolve(__dirname, '../vendors/lodash'));
 var uuid = require(path.resolve(__dirname, '../vendors/uuid'));
 
 var Abstract = require('./BaseAbstract');
@@ -34,9 +35,7 @@ class ApiAbstract extends Abstract {
         this._creationSchema = null;
         this._modificationSchema = null;
 
-        this._systemFields = [
-            '_id'
-        ];
+        this._systemFields = ['_id'];
 
     }
 
@@ -85,11 +84,11 @@ class ApiAbstract extends Abstract {
     /**
      * search documents
      *
-     * @param {Object} filter
+     * @param {Object} filters
      * @param {Object} fields
      * @return {Chain}
      */
-    find (filter, fields) {
+    find (filters, fields) {
 
         var chain = new Chain({
             steps: {
@@ -103,7 +102,7 @@ class ApiAbstract extends Abstract {
 
             return new Promise((resolve, reject) => {
 
-                this._model().find(filter, fields)
+                this._model().find(filters, fields)
                     .mapToChain(data)
                     .exec()
                     .then((result) => {
@@ -118,6 +117,208 @@ class ApiAbstract extends Abstract {
         });
 
         return chain;
+    }
+
+    /**
+     * search one document
+     *
+     * @param {Object} filters
+     * @param {Object} fields
+     * @return {Chain}
+     */
+    findOne (filters, fields) {
+
+        var chain = new Chain({
+            steps: {
+                sort: null,
+                limit: null,
+                skip: null
+            }
+        });
+
+        chain.onExec((options) => {
+
+            return new Promise((resolve, reject) => {
+
+                options.fields = fields;
+
+                this._model().findOne(filters, options)
+                    .then((result) => {
+                        resolve(result);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+
+            });
+
+        });
+
+        return chain;
+
+    }
+
+    /**
+     * get document by name
+     *
+     * @param {String} name
+     * @param {Array} fields
+     * @return {Promise}
+     */
+    getByName (name, fields) {
+
+        return new Promise((resolve, reject) => {
+            this.findOne({name: name}, fields).exec()
+                .then((result) => {
+                    resolve(result);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+
+    }
+
+    /**
+     * get document by name
+     *
+     * @param {*} id
+     * @param {Array} fields
+     * @return {Promise}
+     */
+    getById (id, fields) {
+
+        return new Promise((resolve, reject) => {
+
+            this.findOne({_id: id}, fields).exec()
+                .then((result) => {
+                    resolve(result);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+
+        });
+
+    }
+
+    /**
+     * update document by name
+     *
+     * @param {String} name
+     * @param {Object} data
+     * @return {Promise}
+     */
+    updateByName (name, data) {
+
+        return new Promise((resolve, reject) => {
+            var validData, doc;
+
+            this._validate(data, this._modificationSchema)
+            .then((data) => {
+
+                if (this._isEmptyData(data)) {
+                    return reject(new this.Error(this.Error.CODES.INVALID_DATA));
+                }
+
+                validData = data;
+
+                return this._model().findOne({
+                    name: name
+                });
+            })
+            .then((_doc) => {
+
+                doc = _doc;
+
+                if (!doc) {
+                    return reject(
+                        new this.Error(this.Error.CODES.NOT_FOUND)
+                    );
+                }
+
+                validData.modificationDate = this._time();
+
+                return this._model().update(
+                    {
+                        name: name
+                    },
+                    {
+                        '$set': validData
+                    }
+                );
+
+            })
+            .then(() => {
+                var updated = _.defaultsDeep(validData, doc);
+                resolve(updated);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+        });
+
+    }
+
+    /**
+     * update document by id
+     *
+     * @param {String} id
+     * @param {Object} data
+     * @return {Promise}
+     */
+    updateById (id, data) {
+
+        return new Promise((resolve, reject) => {
+
+            var validData, doc;
+
+            this._validate(data, this._modificationSchema)
+            .then((data) => {
+
+                if (this._isEmptyData(data)) {
+                    return reject(new this.Error(this.Error.CODES.INVALID_DATA));
+                }
+
+                validData = data;
+
+                return this._model().findOne({
+                    _id: id
+                });
+            })
+            .then((_doc) => {
+
+                doc = _doc;
+
+                if (!doc) {
+                    return reject(
+                        new this.Error(this.Error.CODES.NOT_FOUND)
+                    );
+                }
+
+                validData.modificationDate = this._time();
+
+                return this._model().update(
+                    {
+                        _id: id
+                    },
+                    {
+                        '$set': validData
+                    }
+                );
+
+            })
+            .then(() => {
+                var updated = _.defaultsDeep(validData, doc);
+                resolve(updated);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+        });
+
     }
 
     /**
