@@ -6,6 +6,8 @@ var Abstract = require('./Abstract');
 
 var ApiError = require('./Error');
 
+var Chain = require(path.resolve(__dirname, '../Chain'));
+
 var BaseCrudError = ApiError.extendCodes({
     NO_MODEL_NAME: 'maf/Api/CrudAbstract: no model name in constructor',
     NO_MODEL: 'maf/Api/CrudAbstract: no model with name = %name%'
@@ -65,6 +67,37 @@ class CrudAbstract extends Abstract {
 
         });
 
+    }
+
+    find (filter, fields) {
+
+        var chain = new Chain({
+            steps: {
+                sort: null,
+                limit: null,
+                skip: null
+            }
+        });
+
+        chain.onExec((data) => {
+
+            return new Promise((resolve, reject) => {
+
+                this._model().find(filter, fields)
+                    .mapToChain(data)
+                    .exec()
+                    .then((result) => {
+                        resolve(result);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+
+            });
+
+        });
+
+        return chain;
     }
 
     _setEntityName (name) {
