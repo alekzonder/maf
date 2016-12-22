@@ -3,7 +3,6 @@
 var path = require('path');
 
 var ModelError = require(path.join(__dirname, '..', 'Error'));
-// var ModelErrorCodes = require(path.join(__dirname, '..', 'ErrorCodes'));
 
 var FindCursorChain = require(path.join(__dirname, 'FindCursorChain'));
 
@@ -28,7 +27,6 @@ class ModelMongodb {
         this._debugger = null;
 
         this.Error = ModelError;
-        this.errorCodes = ModelError.CODES;
     }
 
     /**
@@ -76,7 +74,7 @@ class ModelMongodb {
 
                 if (i in this._indexes === false) {
                     throw new ModelError(
-                        this.ErrorCodes.INVALID_ENSURE_INDEXES,
+                        this.Error.CODES.INVALID_ENSURE_INDEXES,
                         'no index data for index ' + i
                     );
                 }
@@ -85,7 +83,7 @@ class ModelMongodb {
 
                 if ('options' in index === false || 'name' in index.options === false) {
                     throw new ModelError(
-                        this.ErrorCodes.INVALID_ENSURE_INDEXES,
+                        this.Error.CODES.INVALID_ENSURE_INDEXES,
                         'no options.name for index ' + i
                     );
                 }
@@ -178,7 +176,7 @@ class ModelMongodb {
                             // already exists
                             e = new ModelError(
                                 this.Error.CODES.ALREADY_EXISTS,
-                                'record with id = ' + data.id + ' already exists'
+                                'document already exists'
                             );
                         } else {
                             e = error;
@@ -316,6 +314,8 @@ class ModelMongodb {
     find (filter, fields) {
 
         var timer = this._createTimer('find');
+
+        fields = this._prepareFields(fields);
 
         var chain = new FindCursorChain(this._collection, filter, fields);
 
@@ -525,6 +525,31 @@ class ModelMongodb {
         return JSON.stringify(data);
     }
 
+    /**
+      * prepare fields
+      *
+      * @param  {Object} fields
+      * @return {Object}
+      */
+    _prepareFields (fields) {
+        var result = {};
+
+        if (!fields) {
+            return null;
+        }
+
+        if (Array.isArray(fields)) {
+            for (var name of fields) {
+                result[name] = 1;
+            }
+        } else if (typeof fields === 'object') {
+            result = fields;
+        } else {
+            throw this.Error(this.Error.CODES.INVALID_FIELDS_FORMAT);
+        }
+
+        return result;
+    }
 
 }
 

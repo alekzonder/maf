@@ -1,3 +1,4 @@
 module.exports = {
-    fields: require('./fields')
+    fields: require('./fields'),
+    findResult: require('./findResult')
 };

@@ -2,6 +2,8 @@ var terror = require('terror');
 
 var ErrorCheckChain = require('./Error/CheckChain');
 
+terror.prototype.stackTraceLimit = 50;
+
 terror.prototype.checkable = true;
 
 terror.prototype.getCheckChain = function (defaultResponseFn, logger) {
