@@ -114,12 +114,17 @@ class ErrorCheckChain {
     /**
      * run checks
      *
+     * @param {logger} logger
      * @return {Boolean}
      */
-    check () {
+    check (logger) {
 
         if (this._entity && this._error.entity !== this._entity) {
             return false;
+        }
+
+        if (logger) {
+            this._logger = logger;
         }
 
         for (var i in this._checks) {
@@ -133,7 +138,12 @@ class ErrorCheckChain {
             }
 
             if (this._ifInstanceOfCheckChain(i, check)) {
-                return true;
+                var result = check.check(this._logger);
+
+                if (result) {
+                    return true;
+                }
+
             } else if (this._ifFunction(i, check)) {
                 return true;
             }
@@ -152,7 +162,6 @@ class ErrorCheckChain {
 
         }
 
-
         return false;
 
     }
@@ -162,13 +171,15 @@ class ErrorCheckChain {
     }
 
     _ifInstanceOfCheckChain (i, check) {
-        return check instanceof ErrorCheckChain && check.check();
+        return check instanceof ErrorCheckChain;
     }
 
     _ifFunction (i, check) {
         this._debug(`check function entity = ${this._entity}, step = ${i}`);
 
         var fnResult = check();
+
+        this._debug(fnResult);
 
         if (fnResult) {
             fnResult(this._error);
