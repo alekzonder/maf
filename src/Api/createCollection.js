@@ -1,0 +1,35 @@
+module.exports = function (di, apiClasses, createFn) {
+
+    return new Promise((resolve/* , reject */) => {
+
+        var api = {};
+
+        for (var name in apiClasses) {
+
+            api[name] = createFn(di, apiClasses[name]);
+
+            if (di.debug && api[name].setDebugger) {
+                api[name].setDebugger(di.debug);
+            }
+
+        }
+
+        api.createTest = () => {
+
+            return new Promise((resolve, reject) => {
+                api.checks.createTest()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+
+        };
+
+        resolve(api);
+
+    });
+
+};
