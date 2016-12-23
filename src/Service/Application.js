@@ -80,7 +80,7 @@ module.exports = function (di, config) {
 
     app.use(middlewares.di(di.logger, di, initDiFn));
 
-    init.nprof(di.logger, app, di.config.nprof);
+    init.nprof(di.logger, app, di.config.get('nprof'));
 
     return app;
 
