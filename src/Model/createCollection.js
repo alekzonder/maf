@@ -10,8 +10,8 @@ module.exports = function (di, modelClasses, createFn) {
 
             model.init();
 
-            if (di.debug && model.setDebugger) {
-                model.setDebugger(di.debug);
+            if (di.debug && model.setDebug) {
+                model.setDebug(di.debug);
             }
 
             models[name] = model;

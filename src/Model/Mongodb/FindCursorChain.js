@@ -6,17 +6,31 @@ var ModelError = require(path.join(__dirname, '..', 'Error'));
 
 class FindCursorChain {
 
-    constructor (collection, filter, fields) {
+    constructor (collection, filter, fields, debugTimer) {
         this._collection = collection;
+
         this._cursor = collection.find(filter);
 
         this._execCallback = null;
+
+        this._debugTimer = null;
+
+        if (debugTimer) {
+            this._debugTimer = debugTimer;
+
+            this._debugTimer.data = {
+                collection: this._collection.namespace,
+                filter: filter,
+                fields: fields,
+                params: {}
+            };
+        }
 
         if (fields) {
             this._cursor.project(fields);
         }
 
-        this._debugMessage = `.find(${this._json(filter)}, ${this._json(fields)})`;
+        // this._debugMessage = `.find(${this._json(filter)}, ${this._json(fields)})`;
     }
 
     onExec (callback) {
@@ -28,12 +42,21 @@ class FindCursorChain {
             this._cursor.project(fields);
         }
 
+        if (this._debugTimer) {
+            this._debugTimer.fields = fields;
+        }
+
         return this;
     }
 
     sort (sort) {
         if (sort) {
-            this._debugMessage += `.sort(${this._json(sort)})`;
+            if (this._debugTimer) {
+                this._debugTimer.sort = sort;
+            }
+
+            // this._debugMessage += `.sort(${this._json(sort)})`;
+
             this._cursor.sort(sort);
         }
 
@@ -41,14 +64,22 @@ class FindCursorChain {
     }
 
     limit (limit) {
-        this._debugMessage += `.limit(${limit})`;
+        if (this._debugTimer) {
+            this._debugTimer.limit = limit;
+        }
+
         this._cursor.limit(limit);
+
         return this;
     }
 
     skip (skip) {
         if (skip) {
-            this._debugMessage += `.skip(${skip})`;
+
+            if (this._debugTimer) {
+                this._debugTimer.skip = skip;
+            }
+
             this._cursor.skip(skip);
         }
 
@@ -65,6 +96,10 @@ class FindCursorChain {
             }
 
             this[name](data[name]);
+
+            if (this._debugTimer) {
+                this._debugTimer.data.params[name] = data[name];
+            }
         }
 
         return this;
@@ -75,9 +110,7 @@ class FindCursorChain {
             throw new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_CALLBACK);
         }
 
-        var debugMessage = `${this._collection.namespace}: db.${this._collection.collectionName}${this._debugMessage}`;
-
-        return this._execCallback(this._cursor, debugMessage);
+        return this._execCallback(this._cursor);
     }
 
     _json (data) {

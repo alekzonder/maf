@@ -9,7 +9,8 @@ class DebugTimer {
             time: null,
             type: null,
             name: null,
-            message: null
+            message: null,
+            data: null
         };
 
         if (type) {
@@ -44,11 +45,19 @@ class DebugTimer {
     }
 
     set message (message) {
-        if (typeof message == 'object') {
-            message = JSON.stringify(message);
-        }
+        // if (typeof message == 'object') {
+        //     message = JSON.stringify(message);
+        // }
 
         this._data.message = message;
+    }
+
+    get data () {
+        return this._data.data;
+    }
+
+    set data (data) {
+        this._data.data = data;
     }
 
     stop () {

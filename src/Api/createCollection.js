@@ -8,8 +8,8 @@ module.exports = function (di, apiClasses, createFn) {
 
             api[name] = createFn(di, apiClasses[name]);
 
-            if (di.debug && api[name].setDebugger) {
-                api[name].setDebugger(di.debug);
+            if (di.debug && api[name].setDebug) {
+                api[name].setDebug(di.debug);
             }
 
         }

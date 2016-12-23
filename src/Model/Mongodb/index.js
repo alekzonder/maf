@@ -24,7 +24,7 @@ class ModelMongodb {
         this._indexes = null;
         this._collection = null;
 
-        this._debugger = null;
+        this._debug = null;
 
         this.Error = ModelError;
     }
@@ -32,10 +32,10 @@ class ModelMongodb {
     /**
      * set debugger object
      *
-     * @param {Request/Debug} __debugger
+     * @param {Request/Debug} debug
      */
-    setDebugger (__debugger) {
-        this._debugger = __debugger;
+    setDebug (debug) {
+        this._debug = debug;
     }
 
     /**
@@ -156,7 +156,10 @@ class ModelMongodb {
                 data._id = data.id;
             }
 
-            timer.message = `db.${this._collectionName}.insert(${this._json(data)})`;
+            timer.data = {
+                collection: this._collection.namespace,
+                data: data
+            };
 
             this._collection.insertOne(data)
                 .then((result) => {
@@ -213,7 +216,12 @@ class ModelMongodb {
             options.returnOriginal = false;
         }
 
-        timer.message = `db.${this._collectionName} filter=${this._json(filter)} update=${this._json(update)} options=${this._json(options)}`;
+        timer.data = {
+            collection: this._collection.namespace,
+            filter: filter,
+            update: update,
+            options: options
+        };
 
         return new Promise((resolve, reject) => {
             this._collection.findOneAndUpdate(filter, update, options)
@@ -255,7 +263,12 @@ class ModelMongodb {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOne');
-            timer.message = `db.${this._collectionName} query=${this._json(query)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collection.namespace,
+                query: query,
+                options: options
+            };
 
             this._collection.findOne(query, options)
                 .then((doc) => {
@@ -284,7 +297,12 @@ class ModelMongodb {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOneById');
-            timer.message = `db.${this._collectionName} id=${this._json(id)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collection.namespace,
+                id: id,
+                options: options
+            };
 
             this._collection.findOne({_id: id})
                 .then((doc) => {
@@ -317,11 +335,9 @@ class ModelMongodb {
 
         fields = this._prepareFields(fields);
 
-        var chain = new FindCursorChain(this._collection, filter, fields);
+        var chain = new FindCursorChain(this._collection, filter, fields, timer);
 
-        chain.onExec((cursor, debugMessage) => {
-
-            timer.message = debugMessage;
+        chain.onExec((cursor) => {
 
             return new Promise((resolve, reject) => {
 
@@ -361,7 +377,13 @@ class ModelMongodb {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('update');
-            timer.message = `db.${this._collectionName} filter=${this._json(filter)} data=${this._json(data)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collection.namespace,
+                filter: filter,
+                data: data,
+                options: options
+            };
 
             var promise;
 
@@ -393,7 +415,12 @@ class ModelMongodb {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('remove');
-            timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collection.namespace,
+                filter: filter,
+                options: options
+            };
 
             this._collection.remove(filter, options)
                 .then((data) => {
@@ -425,7 +452,12 @@ class ModelMongodb {
      */
     removeOne (filter, options) {
         var timer = this._createTimer('removeOne');
-        timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
+
+        timer.data = {
+            collection: this._collection.namespace,
+            filter: filter,
+            options: options
+        };
 
         return new Promise((resolve, reject) => {
             this._collection.remove(filter, {single: true})
@@ -450,7 +482,12 @@ class ModelMongodb {
      */
     count (filter, options) {
         var timer = this._createTimer('count');
-        timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
+
+        timer.data = {
+            collection: this._collection.namespace,
+            filter: filter,
+            options: options
+        };
 
         return new Promise((resolve, reject) => {
 
@@ -490,11 +527,11 @@ class ModelMongodb {
      */
     _logDebug (data) {
 
-        if (!this._debugger || !this._debugger.log) {
+        if (!this._debug || !this._debug.log) {
             return;
         }
 
-        this._debugger.log(data);
+        this._debug.log(data);
     }
 
     /**

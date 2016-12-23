@@ -5,11 +5,13 @@ var uuid = require(path.resolve(__dirname, '../vendors/uuid'));
 
 var Abstract = require('./BaseAbstract');
 
-var ApiError = require('./Error');
+var BaseApiError = require('./Error');
 
 var Chain = require(path.resolve(__dirname, '../Chain'));
 
-var BaseCrudError = ApiError.extendCodes({
+var DebugTimer = require(path.join(__dirname, '..', 'Debug', 'Timer'));
+
+var ApiError = BaseApiError.extendCodes({
     NO_MODEL_NAME: 'maf/Api/CrudAbstract: no model name in constructor',
     NO_MODEL: 'maf/Api/CrudAbstract: no model with name = %name%'
 });
@@ -28,7 +30,7 @@ class ApiAbstract extends Abstract {
 
         this.entity = null;
 
-        this.Error = BaseCrudError;
+        this.Error = ApiError;
 
         this._modelName = modelName;
 
@@ -37,6 +39,17 @@ class ApiAbstract extends Abstract {
 
         this._systemFields = ['_id'];
 
+        this._debug = null;
+
+    }
+
+    /**
+     * set debug object
+     *
+     * @param {Request/Debug} debug
+     */
+    setDebug (debug) {
+        this._debug = debug;
     }
 
     /**
@@ -50,6 +63,13 @@ class ApiAbstract extends Abstract {
 
         return new Promise((resolve, reject) => {
 
+            var timer = this._createTimer(this.entity + ':create');
+
+            timer.data = {
+                data: data,
+                options: options
+            };
+
             this._validate(data, this._creationSchema, options)
             .then((data) => {
 
@@ -60,9 +80,11 @@ class ApiAbstract extends Abstract {
                 return this._model().insertOne(data);
             })
             .then((doc) => {
+                timer.stop();
                 resolve(doc);
             })
             .catch((error) => {
+                timer.error(error);
 
                 var ModelError = this._model().Error;
 
@@ -90,6 +112,10 @@ class ApiAbstract extends Abstract {
      */
     find (filters, fields) {
 
+        var timer = this._createTimer(this.entity + ':find');
+
+        timer.data = {filters: filters, fields};
+
         var chain = new Chain({
             steps: {
                 sort: null,
@@ -100,15 +126,19 @@ class ApiAbstract extends Abstract {
 
         chain.onExec((data) => {
 
+            timer.data.params = data;
+
             return new Promise((resolve, reject) => {
 
                 this._model().find(filters, fields)
                     .mapToChain(data)
                     .exec()
                     .then((result) => {
+                        timer.stop();
                         resolve(result);
                     })
                     .catch((error) => {
+                        timer.error(error);
                         reject(error);
                     });
 
@@ -128,6 +158,13 @@ class ApiAbstract extends Abstract {
      */
     findOne (filters, fields) {
 
+        var timer = this._createTimer(this.entity + ':findOne');
+
+        timer.data = {
+            filters: filters,
+            fields: fields
+        };
+
         var chain = new Chain({
             steps: {
                 sort: null,
@@ -137,6 +174,7 @@ class ApiAbstract extends Abstract {
         });
 
         chain.onExec((options) => {
+            timer.data.options = options;
 
             return new Promise((resolve, reject) => {
 
@@ -144,9 +182,11 @@ class ApiAbstract extends Abstract {
 
                 this._model().findOne(filters, options)
                     .then((result) => {
+                        timer.stop();
                         resolve(result);
                     })
                     .catch((error) => {
+                        timer.error(error);
                         reject(error);
                     });
 
@@ -168,11 +208,21 @@ class ApiAbstract extends Abstract {
     getByName (name, fields) {
 
         return new Promise((resolve, reject) => {
+
+            var timer = this._createTimer(this.entity + ':getByName');
+
+            timer.data = {
+                name: name,
+                fields: fields
+            };
+
             this.findOne({name: name}, fields).exec()
                 .then((result) => {
+                    timer.stop();
                     resolve(result);
                 })
                 .catch((error) => {
+                    timer.error(error);
                     reject(error);
                 });
         });
@@ -190,11 +240,20 @@ class ApiAbstract extends Abstract {
 
         return new Promise((resolve, reject) => {
 
+            var timer = this._createTimer(this.entity + ':getById');
+
+            timer.data = {
+                id: id,
+                fields: fields
+            };
+
             this.findOne({_id: id}, fields).exec()
                 .then((result) => {
+                    timer.stop();
                     resolve(result);
                 })
                 .catch((error) => {
+                    timer.error(error);
                     reject(error);
                 });
 
@@ -212,6 +271,14 @@ class ApiAbstract extends Abstract {
     updateByName (name, data) {
 
         return new Promise((resolve, reject) => {
+
+            var timer = this._createTimer(this.entity + ':updateByName');
+
+            timer.data = {
+                name: name,
+                data: data
+            };
+
             var validData, doc;
 
             this._validate(data, this._modificationSchema)
@@ -250,10 +317,12 @@ class ApiAbstract extends Abstract {
 
             })
             .then(() => {
+                timer.stop();
                 var updated = _.defaultsDeep(validData, doc);
                 resolve(updated);
             })
             .catch((error) => {
+                timer.error(error);
                 reject(error);
             });
 
@@ -271,6 +340,13 @@ class ApiAbstract extends Abstract {
     updateById (id, data) {
 
         return new Promise((resolve, reject) => {
+
+            var timer = this._createTimer(this.entity + ':updateById');
+
+            timer.data = {
+                id: id,
+                data: data
+            };
 
             var validData, doc;
 
@@ -310,10 +386,12 @@ class ApiAbstract extends Abstract {
 
             })
             .then(() => {
+                timer.stop();
                 var updated = _.defaultsDeep(validData, doc);
                 resolve(updated);
             })
             .catch((error) => {
+                timer.error(error);
                 reject(error);
             });
 
@@ -351,6 +429,38 @@ class ApiAbstract extends Abstract {
 
 
         return this._models[this._modelName];
+    }
+
+    /**
+     * emit debug data
+     *
+     * @private
+     * @param  {Object} data
+     */
+    _logDebug (data) {
+
+        if (!this._debug || !this._debug.log) {
+            return;
+        }
+
+        this._debug.log(data);
+    }
+
+    /**
+     * create debug timer
+     *
+     * @private
+     * @param  {String} name
+     * @return {DebugTimer}
+     */
+    _createTimer (name) {
+        var timer = new DebugTimer('api', name);
+
+        timer.onStop((data) => {
+            this._logDebug(data);
+        });
+
+        return timer;
     }
 
 }
