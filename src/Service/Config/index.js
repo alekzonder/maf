@@ -1,5 +1,6 @@
 'use strict';
 
+var os = require('os');
 var path = require('path');
 
 var _ = require('lodash');
@@ -71,6 +72,9 @@ class ServiceConfig {
                 })
                 .then((config) => {
                     this._config = config;
+                    this._config.service = {
+                        hostname: os.hostname()
+                    };
                     resolve();
                 })
                 .catch((error) => {
