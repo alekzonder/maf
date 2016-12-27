@@ -21,7 +21,7 @@ module.exports = function (init) {
                     if (originalDi) {
                         di.debug = new RequestDebug();
                         di.setConnections(originalDi.getConnections());
-                    } else {
+                    } else if (init.db) {
                         return init.db(config, di);
                     }
 
