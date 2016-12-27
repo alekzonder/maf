@@ -73,7 +73,11 @@ class ApiAbstract extends Abstract {
             this._validate(data, this._creationSchema, options)
             .then((data) => {
 
-                data.id = uuid.v4();
+                // TODO make options flag
+                if (!data.id) {
+                    data.id = uuid.v4();
+                }
+
                 data.creationDate = this._time();
                 data.modificationDate = null;
 
@@ -354,7 +358,7 @@ class ApiAbstract extends Abstract {
             .then((data) => {
 
                 if (this._isEmptyData(data)) {
-                    return reject(new this.Error(this.Error.CODES.INVALID_DATA));
+                    return reject(new this.Error(this.Error.CODES.INVALID_DATA, 'empty data'));
                 }
 
                 validData = data;
