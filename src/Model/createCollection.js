@@ -4,6 +4,8 @@ module.exports = function (di, modelClasses, createFn) {
 
         var models = {};
 
+        di.models = models;
+
         for (var name in modelClasses) {
 
             var model = createFn(di, modelClasses[name]);

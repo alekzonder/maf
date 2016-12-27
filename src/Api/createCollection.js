@@ -4,6 +4,8 @@ module.exports = function (di, apiClasses, createFn) {
 
         var api = {};
 
+        di.api = api;
+
         for (var name in apiClasses) {
 
             api[name] = createFn(di, apiClasses[name]);
