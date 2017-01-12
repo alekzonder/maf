@@ -18,6 +18,11 @@ module.exports = function (logger, options) {
         if (!fs.existsSync(configPath)) {
             logger.debug(`fs: config file not found ${configPath}`);
 
+            if (options.useDefaultConfig) {
+                logger.debug(`useDefaultConfig = true, using default config`);
+                return resolve({});
+            }
+
             return reject(
                 ConfigError.createError(ConfigError.CODES.NO_CONFIG, {path: configPath})
             );
