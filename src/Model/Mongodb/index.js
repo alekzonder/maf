@@ -46,7 +46,7 @@ class ModelMongodb {
     init () {
 
         if (!this._collectionName) {
-            throw new ModelError(ModelError.CODES.NO_COLLECTION_NAME);
+            throw new this.Error(this.Error.CODES.NO_COLLECTION_NAME);
         }
 
         this._collection = this._db.collection(this._collectionName);
@@ -73,7 +73,7 @@ class ModelMongodb {
             for (var i in this._indexes) {
 
                 if (i in this._indexes === false) {
-                    throw new ModelError(
+                    throw new this.Error(
                         this.Error.CODES.INVALID_ENSURE_INDEXES,
                         'no index data for index ' + i
                     );
@@ -82,7 +82,7 @@ class ModelMongodb {
                 var index = this._indexes[i];
 
                 if ('options' in index === false || 'name' in index.options === false) {
-                    throw new ModelError(
+                    throw new this.Error(
                         this.Error.CODES.INVALID_ENSURE_INDEXES,
                         'no options.name for index ' + i
                     );
@@ -132,7 +132,7 @@ class ModelMongodb {
 
                 })
                 .catch((error) => {
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
 
@@ -177,12 +177,12 @@ class ModelMongodb {
 
                         if (error.code && error.code === 11000) {
                             // already exists
-                            e = new ModelError(
+                            e = new this.Error(
                                 this.Error.CODES.ALREADY_EXISTS,
                                 'document already exists'
                             );
                         } else {
-                            e = error;
+                            e = this.Error.ensureError(error);
                         }
 
                         timer.error(e.message);
@@ -396,6 +396,7 @@ class ModelMongodb {
             promise
                 .then((result) => {
                     timer.stop();
+
                     /*
                        result = {result: { ok: 1, nModified: 0, n: 0 }, connection: {...}};
                      */
@@ -411,6 +412,13 @@ class ModelMongodb {
 
     }
 
+    /**
+     * remove docs
+     *
+     * @param {Object} filter
+     * @param {Object} options
+     * @return {Promise}
+     */
     remove (filter, options) {
 
         return new Promise((resolve, reject) => {
@@ -514,8 +522,15 @@ class ModelMongodb {
      */
     aggregate (pipeline, options) {
         var timer = this._createTimer('aggregate');
-        timer.message = `db.${this._collectionName} pipeline=${this._json(pipeline)} options=${this._json(options)}`;
+
+        timer.data = {
+            collection: this._collection.namespace,
+            filter: pipeline,
+            options: options
+        };
+
         timer.stop();
+
         return this._collection.aggregate(pipeline, options);
     }
 
@@ -549,17 +564,6 @@ class ModelMongodb {
         });
 
         return timer;
-    }
-
-    /**
-     * json helper
-     *
-     * @private
-     * @param  {Object} data
-     * @return {String}
-     */
-    _json (data) {
-        return JSON.stringify(data);
     }
 
     /**

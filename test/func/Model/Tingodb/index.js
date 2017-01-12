@@ -1,4 +1,7 @@
+/* eslint max-nested-callbacks: off, no-unused-vars: off */
+
 'use strict';
+
 var path = require('path');
 var fs = require('fs-extra');
 var _ = require('lodash');
@@ -24,7 +27,7 @@ var logger = require('log4js').getLogger();
 var ModelTingodb = require(rootPath + '/src/Model/Tingodb');
 
 class TestModel extends ModelTingodb {
-    constructor(db) {
+    constructor (db) {
         super(db);
         this._collectionName = 'test';
     }
@@ -32,9 +35,9 @@ class TestModel extends ModelTingodb {
 
 var model;
 
-describe('Model/Tingodb', function() {
+describe('Model/Tingodb', function () {
 
-    beforeEach(function() {
+    beforeEach(function () {
         fs.removeSync(tmpPath);
         fs.mkdirsSync(tmpPath);
 
@@ -44,14 +47,14 @@ describe('Model/Tingodb', function() {
         model.init();
     });
 
-    describe('#insertOne', function() {
+    describe('#insertOne', function () {
 
-        it('insert success', function(done) {
+        it('insert success', function (done) {
 
             model.insertOne({
-                    id: 1,
-                    name: 'test'
-                })
+                id: 1,
+                name: 'test'
+            })
                 .then((item) => {
 
                     assert.jsonSchema(item, jj(joi.object().keys({
@@ -68,7 +71,7 @@ describe('Model/Tingodb', function() {
 
         });
 
-        it('reject error on duplicate id', function(done) {
+        it('reject error on duplicate id', function (done) {
             var data = {
                 id: 1,
                 name: 'test'
@@ -79,8 +82,8 @@ describe('Model/Tingodb', function() {
                     return model.insertOne(data);
                 })
                 .catch((error) => {
-                    assert.equal(error.message, 'record with id = 1 already exists');
-                    assert.equal(error.code, 'alreadyExists');
+                    assert.equal(error.message, 'document already exists');
+                    assert.equal(error.code, model.Error.CODES.ALREADY_EXISTS);
                     done();
                 });
         });
@@ -275,8 +278,8 @@ describe('Model/Tingodb', function() {
                     var schema = joi.object().keys({
                         total: joi.number().required().valid(2),
                         docs: joi.array().items({
-                            _id: joi.number().required().valid([1,2]),
-                            id: joi.number().required().valid([1,2]),
+                            _id: joi.number().required().valid([1, 2]),
+                            id: joi.number().required().valid([1, 2]),
                             name: joi.string().required().valid(['test', 'test2']),
                             group: joi.number().required().valid(1)
                         }).length(2)
@@ -578,7 +581,7 @@ describe('Model/Tingodb', function() {
 
         class ModelTestIndexes extends ModelTingodb {
 
-            constructor(db) {
+            constructor (db) {
                 super(db);
                 this._collectionName = 'test';
                 this._indexes = [

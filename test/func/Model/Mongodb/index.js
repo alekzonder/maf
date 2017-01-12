@@ -1,7 +1,10 @@
+/* eslint max-nested-callbacks: off, no-unused-vars: off */
+
 'use strict';
+
 var path = require('path');
-var fs = require('fs-extra');
-var _ = require('lodash');
+// var fs = require('fs-extra');
+// var _ = require('lodash');
 var joi = require('joi');
 var joiJsonSchema = require('joi-to-json-schema');
 var jj = joiJsonSchema;
@@ -18,16 +21,16 @@ var url = 'mongodb://localhost:27017/test';
 
 // init
 var rootPath = path.resolve(__dirname + '/../../../..');
-var tmpPath = rootPath + '/tests/tmp/Tingodb';
+// var tmpPath = rootPath + '/tests/tmp/Tingodb';
 
-var logger = require('log4js').getLogger();
+// var logger = require('log4js').getLogger();
 
 var ModelMongodb = require(rootPath + '/src/Model/Mongodb');
 
 var db;
 
 class TestModel extends ModelMongodb {
-    constructor(db) {
+    constructor (db) {
         super(db);
         this._collectionName = 'test';
     }
@@ -35,15 +38,15 @@ class TestModel extends ModelMongodb {
 
 var model;
 
-describe('Model/Mongodb', function() {
+describe('Model/Mongodb', function () {
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
 
         if (db) {
             db.close();
         }
 
-        MongoClient.connect(url, function(err, _db) {
+        MongoClient.connect(url, function (err, _db) {
 
             if (err) {
                 return done(err);
@@ -68,14 +71,14 @@ describe('Model/Mongodb', function() {
 
     });
 
-    describe('#insertOne', function() {
+    describe('#insertOne', function () {
 
-        it('insert success', function(done) {
+        it('insert success', function (done) {
 
             model.insertOne({
-                    id: 1,
-                    name: 'test'
-                })
+                id: 1,
+                name: 'test'
+            })
                 .then((item) => {
 
                     assert.jsonSchema(item, jj(joi.object().keys({
@@ -92,7 +95,7 @@ describe('Model/Mongodb', function() {
 
         });
 
-        it('reject error on duplicate id', function(done) {
+        it('reject error on duplicate id', function (done) {
             var data = {
                 id: 1,
                 name: 'test'
@@ -300,8 +303,8 @@ describe('Model/Mongodb', function() {
                     var schema = joi.object().keys({
                         total: joi.number().required().valid(2),
                         docs: joi.array().items({
-                            _id: joi.number().required().valid([1,2]),
-                            id: joi.number().required().valid([1,2]),
+                            _id: joi.number().required().valid([1, 2]),
+                            id: joi.number().required().valid([1, 2]),
                             name: joi.string().required().valid(['test', 'test2']),
                             group: joi.number().required().valid(1)
                         }).length(2)
@@ -606,7 +609,7 @@ describe('Model/Mongodb', function() {
 
         class ModelTestIndexes extends ModelMongodb {
 
-            constructor(db) {
+            constructor (db) {
                 super(db);
                 this._collectionName = 'test';
                 this._indexes = [

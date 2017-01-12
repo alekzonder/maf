@@ -4,8 +4,17 @@ var path = require('path');
 
 var ModelError = require(path.join(__dirname, '..', 'Error'));
 
-class FindCursorChain {
+/**
+ * find cursor chain class
+ */
+class MongodbFindCursorChain {
 
+    /**
+     * @param {Object} collection
+     * @param {Object} filter
+     * @param {Object} fields
+     * @param {DebugTimer} debugTimer
+     */
     constructor (collection, filter, fields, debugTimer) {
         this._collection = collection;
 
@@ -30,13 +39,19 @@ class FindCursorChain {
             this._cursor.project(fields);
         }
 
-        // this._debugMessage = `.find(${this._json(filter)}, ${this._json(fields)})`;
     }
 
+    /**
+     * @param {Function} callback
+     */
     onExec (callback) {
         this._execCallback = callback;
     }
 
+    /**
+     * @param {Object} fields
+     * @return {this}
+     */
     fields (fields) {
         if (fields) {
             this._cursor.project(fields);
@@ -49,13 +64,15 @@ class FindCursorChain {
         return this;
     }
 
+    /**
+     * @param {Object} sort
+     * @return {this}
+     */
     sort (sort) {
         if (sort) {
             if (this._debugTimer) {
                 this._debugTimer.sort = sort;
             }
-
-            // this._debugMessage += `.sort(${this._json(sort)})`;
 
             this._cursor.sort(sort);
         }
@@ -63,6 +80,10 @@ class FindCursorChain {
         return this;
     }
 
+    /**
+     * @param {Number} limit
+     * @return {this}
+     */
     limit (limit) {
         if (this._debugTimer) {
             this._debugTimer.limit = limit;
@@ -73,6 +94,10 @@ class FindCursorChain {
         return this;
     }
 
+    /**
+     * @param {Number} skip
+     * @return {this}
+     */
     skip (skip) {
         if (skip) {
 
@@ -86,6 +111,10 @@ class FindCursorChain {
         return this;
     }
 
+    /**
+     * @param {Object} data
+     * @return {this}
+     */
     mapToChain (data) {
 
         for (var name in data) {
@@ -105,6 +134,11 @@ class FindCursorChain {
         return this;
     }
 
+    /**
+     * exec cursor
+     *
+     * @return {Promise}
+     */
     exec () {
         if (!this._execCallback) {
             throw new ModelError(ModelError.CODES.FIND_CURSOR_CHAIN_NO_CALLBACK);
@@ -113,10 +147,6 @@ class FindCursorChain {
         return this._execCallback(this._cursor);
     }
 
-    _json (data) {
-        return JSON.stringify(data);
-    }
-
 }
 
-module.exports = FindCursorChain;
+module.exports = MongodbFindCursorChain;

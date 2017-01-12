@@ -5,7 +5,6 @@ var path = require('path');
 var _ = require('lodash');
 
 var ModelError = require(path.join(__dirname, '..', 'Error'));
-var ModelErrorCodes = require(path.join(__dirname, '..', 'ErrorCodes'));
 
 var FindCursorChain = require(path.join(__dirname, 'FindCursorChain'));
 
@@ -23,42 +22,23 @@ class ModelTingodb {
      * @param  {mongodb} db
      */
     constructor (db) {
-
-        this.Error = ModelError;
-        this.errorCodes = ModelErrorCodes;
-
         this._db = db;
         this._collectionName = null;
         this._indexes = null;
-
-        /*
-            this._indexes = [
-                {
-                   fields: {
-                       name: 1,
-                       test: 1
-                   },
-                   options: {
-                       background: true,
-                       unique: true,
-                       name: 'name'
-                   }
-                },
-            ];
-         */
-
         this._collection = null;
 
-        this._debugger = null;
+        this._debug = null;
+
+        this.Error = ModelError;
     }
 
     /**
      * set debugger object
      *
-     * @param {Request/Debug} __debugger
+     * @param {Request/Debug} debug
      */
-    setDebugger (__debugger) {
-        this._debugger = __debugger;
+    setDebug (debug) {
+        this._debug = debug;
     }
 
     /**
@@ -69,12 +49,7 @@ class ModelTingodb {
     init () {
 
         if (!this._collectionName) {
-
-            throw new ModelError(
-                'no collection name for model',
-                ModelErrorCodes.NO_COLLECTION_NAME
-            );
-
+            throw new this.Error(this.Error.CODES.NO_COLLECTION_NAME);
         }
 
         this._collection = this._db.collection(this._collectionName);
@@ -123,7 +98,7 @@ class ModelTingodb {
                     resolve({collection: this._collectionName, indexes: data});
                 })
                 .catch((error) => {
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });
@@ -147,20 +122,24 @@ class ModelTingodb {
                 data._id = data.id;
             }
 
-            timer.message = `tingodb.${this._collectionName}.insert(${this._json(data)})`;
+            timer.data = {
+                collection: this._collectionName,
+                data: data
+            };
 
-            this._collection.insert(data, options, function (error, result) {
+            this._collection.insert(data, options, (error, result) => {
 
                 if (error) {
                     var e;
 
                     if (error.message && error.message === 'duplicate key error index') {
-                        e = new ModelError(
-                            'record with id = ' + data.id + ' already exists',
-                            ModelErrorCodes.ALREADY_EXISTS
+                        // already exists
+                        e = new this.Error(
+                            this.Error.CODES.ALREADY_EXISTS,
+                            'document already exists'
                         );
                     } else {
-                        e = error;
+                        e = this.Error.ensureError(error);
                     }
 
                     timer.error(e.message);
@@ -186,11 +165,10 @@ class ModelTingodb {
      *
      * @param  {Object} filter
      * @param  {Object} update
-     * @param {Object} sort
      * @param  {Object} options
      * @return {Object}
      */
-    findOneAndUpdate (filter, update, sort, options) {
+    findOneAndUpdate (filter, update, options) {
 
         var timer = this._createTimer('findOneAndUpdate');
 
@@ -204,11 +182,18 @@ class ModelTingodb {
             }
         }
 
-        if (!sort) {
+        var sort = ['_id', 1];
+
+        if (options && options.sort) {
             sort = ['_id', 1];
         }
 
-        timer.message = `tingodb.${this._collectionName} filter=${this._json(filter)} update=${this._json(update)} options=${this._json(options)}`;
+        timer.data = {
+            collection: this._collectionName,
+            filter: filter,
+            update: update,
+            options: options
+        };
 
         return new Promise((resolve, reject) => {
             this._collection.findAndModify(
@@ -219,7 +204,7 @@ class ModelTingodb {
                 function (error, result) {
                     if (error) {
                         timer.error(error.message);
-                        return reject(error);
+                        return reject(this.Error.ensureError(error));
                     }
 
                     timer.stop();
@@ -250,12 +235,17 @@ class ModelTingodb {
             }
 
             var timer = this._createTimer('findOne');
-            timer.message = `tingodb.${this._collectionName} query=${this._json(query)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collectionName,
+                query: query,
+                options: options
+            };
 
             this._collection.findOne(query, options, function (error, result) {
                 if (error) {
                     timer.error(error.message);
-                    return reject(error);
+                    return reject(this.Error.ensureError(error));
                 }
 
                 timer.stop();
@@ -280,7 +270,12 @@ class ModelTingodb {
         return new Promise((resolve, reject) => {
 
             var timer = this._createTimer('findOneById');
-            timer.message = `tingodb.${this._collectionName} id=${this._json(id)} options=${this._json(options)}`;
+
+            timer.data = {
+                collection: this._collectionName,
+                id: id,
+                options: options
+            };
 
             this.findOne({_id: id})
                 .then((doc) => {
@@ -294,7 +289,7 @@ class ModelTingodb {
                 })
                 .catch((error) => {
                     timer.error(error.message);
-                    reject(error);
+                    reject(this.Error.ensureError(error));
                 });
 
         });
@@ -311,7 +306,14 @@ class ModelTingodb {
 
         var timer = this._createTimer('find');
 
-        var chain = new FindCursorChain(this._collection, filter, fields);
+        fields = this._prepareFields(fields);
+
+        var chain = new FindCursorChain(
+            this._collection,
+            this._collectionName,
+            filter,
+            fields
+        );
 
         chain.onExec((cursor, debugMessage) => {
 
@@ -325,7 +327,7 @@ class ModelTingodb {
                     new Promise((resolve, reject) => {
                         cursor.count(function (error, result) {
                             if (error) {
-                                return reject(error);
+                                return reject(this.Error.ensureError(error));
                             }
                             resolve(result);
                         });
@@ -333,7 +335,7 @@ class ModelTingodb {
                     new Promise((resolve, reject) => {
                         cursor.toArray(function (error, result) {
                             if (error) {
-                                return reject(error);
+                                reject(this.Error.ensureError(error));
                             }
                             resolve(result);
                         });
@@ -349,7 +351,7 @@ class ModelTingodb {
                     })
                     .catch((error) => {
                         timer.error(error.message);
-                        reject(error);
+                        reject(this.Error.ensureError(error));
                     });
 
             });
@@ -371,12 +373,18 @@ class ModelTingodb {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('update');
-            timer.message = `db.${this._collectionName} filter=${this._json(filter)} data=${this._json(data)} options=${this._json(options)}`;
 
-            this._collection.update(filter, data, options, function (error, result) {
+            timer.data = {
+                collection: this._collectionName,
+                filter: filter,
+                data: data,
+                options: options
+            };
+
+            this._collection.update(filter, data, options, (error, result) => {
                 if (error) {
                     timer.error(error.message);
-                    return reject(error);
+                    return reject(this.Error.ensureError(error));
                 }
 
                 timer.stop();
@@ -391,19 +399,23 @@ class ModelTingodb {
      *
      * @param  {Object} filter
      * @param {Object} options
-     *
      * @return {Promise}
      */
     remove (filter, options) {
 
         return new Promise((resolve, reject) => {
             var timer = this._createTimer('remove');
-            timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
 
-            this._collection.remove(filter, options, function (error, result) {
+            timer.data = {
+                collection: this._collectionName,
+                filter: filter,
+                options: options
+            };
+
+            this._collection.remove(filter, options, (error, result) => {
                 if (error) {
                     timer.error(error.message);
-                    return reject(error);
+                    return reject(this.Error.ensureError(error));
                 }
 
                 timer.stop();
@@ -419,7 +431,6 @@ class ModelTingodb {
      *
      * @param  {Object} filter
      * @param {Object} options
-     *
      * @return {Promise}
      */
     removeOne (filter, options) {
@@ -443,14 +454,19 @@ class ModelTingodb {
      */
     count (filter, options) {
         var timer = this._createTimer('count');
-        timer.message = `db.${this._collectionName} filter=${this._json(filter)} options=${this._json(options)}`;
+
+        timer.data = {
+            collection: this._collectionName,
+            filter: filter,
+            options: options
+        };
 
         return new Promise((resolve, reject) => {
 
-            this._collection.count(filter, options, function (error, result) {
+            this._collection.count(filter, options, (error, result) => {
                 if (error) {
                     timer.error(error.message);
-                    return reject(error);
+                    return reject(this.Error.ensureError(error));
                 }
 
                 timer.stop();
@@ -469,7 +485,7 @@ class ModelTingodb {
     aggregate () {
 
         return new Promise((resolve, reject) => {
-            reject(new Error('aggregate not implemented in Model/Tingodb'));
+            reject(new this.Error('aggregate not implemented in Model/Tingodb'));
         });
 
 
@@ -498,7 +514,7 @@ class ModelTingodb {
      * @return {DebugTimer}
      */
     _createTimer (name) {
-        var timer = new DebugTimer('mongo', name);
+        var timer = new DebugTimer('tingo', name);
 
         timer.onStop((data) => {
             this._logDebug(data);
@@ -508,16 +524,30 @@ class ModelTingodb {
     }
 
     /**
-     * json helper
-     *
-     * @private
-     * @param  {Object} data
-     * @return {String}
-     */
-    _json (data) {
-        return JSON.stringify(data);
-    }
+      * prepare fields
+      *
+      * @param  {Object} fields
+      * @return {Object}
+      */
+    _prepareFields (fields) {
+        var result = {};
 
+        if (!fields) {
+            return null;
+        }
+
+        if (Array.isArray(fields)) {
+            for (var name of fields) {
+                result[name] = 1;
+            }
+        } else if (typeof fields === 'object') {
+            result = fields;
+        } else {
+            throw this.Error(this.Error.CODES.INVALID_FIELDS_FORMAT);
+        }
+
+        return result;
+    }
 
 }
 
