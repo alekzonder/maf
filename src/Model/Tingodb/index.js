@@ -80,7 +80,7 @@ class ModelTingodb {
                     this._collection.ensureIndex(
                         index.fields,
                         index.options,
-                        function (error, result) {
+                        (error, result) => {
                             if (error) {
                                 return reject(error);
                             }
@@ -201,7 +201,7 @@ class ModelTingodb {
                 sort,
                 update,
                 queryOptions,
-                function (error, result) {
+                (error, result) => {
                     if (error) {
                         timer.error(error.message);
                         return reject(this.Error.ensureError(error));
@@ -242,7 +242,7 @@ class ModelTingodb {
                 options: options
             };
 
-            this._collection.findOne(query, options, function (error, result) {
+            this._collection.findOne(query, options, (error, result) => {
                 if (error) {
                     timer.error(error.message);
                     return reject(this.Error.ensureError(error));
@@ -325,7 +325,7 @@ class ModelTingodb {
 
                 Promise.all([
                     new Promise((resolve, reject) => {
-                        cursor.count(function (error, result) {
+                        cursor.count((error, result) => {
                             if (error) {
                                 return reject(this.Error.ensureError(error));
                             }
@@ -333,7 +333,7 @@ class ModelTingodb {
                         });
                     }),
                     new Promise((resolve, reject) => {
-                        cursor.toArray(function (error, result) {
+                        cursor.toArray((error, result) => {
                             if (error) {
                                 reject(this.Error.ensureError(error));
                             }
