@@ -18,21 +18,6 @@ var middlewares = {
 
 module.exports = function (di, config) {
 
-    process.on('unhandledRejection', (error) => {
-        di.logger.fatal(error);
-        process.exit(1);
-    });
-
-    process.on('uncaughtException', (error) => {
-        di.logger.fatal(error);
-        process.exit(1);
-    });
-
-    process.on('rejectionHandled', (error) => {
-        di.logger.fatal(error);
-        process.exit(1);
-    });
-
     var app = express();
 
     app.di = di;
