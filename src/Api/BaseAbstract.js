@@ -1,10 +1,14 @@
 'use strict';
 
+var path = require('path');
+
 var joi = require('joi');
 var _ = require('lodash');
 var uuid = require('uuid');
 
-var ApiError = require('./Error');
+var ApiError = require(path.join(__dirname, 'Error'));
+
+var DebugTimer = require(path.join(__dirname, '..', 'Debug', 'Timer'));
 
 class BaseAbstract {
 
@@ -22,6 +26,17 @@ class BaseAbstract {
 
         this._creationSchema = null;
         this._modificationSchema = null;
+
+        this._debug = null;
+    }
+
+    /**
+     * set debug object
+     *
+     * @param {Request/Debug} debug
+     */
+    setDebug (debug) {
+        this._debug = debug;
     }
 
     /**
@@ -231,6 +246,38 @@ class BaseAbstract {
         }
 
         return result;
+    }
+
+    /**
+     * emit debug data
+     *
+     * @private
+     * @param  {Object} data
+     */
+    _logDebug (data) {
+
+        if (!this._debug || !this._debug.log) {
+            return;
+        }
+
+        this._debug.log(data);
+    }
+
+    /**
+     * create debug timer
+     *
+     * @private
+     * @param  {String} name
+     * @return {DebugTimer}
+     */
+    _createTimer (name) {
+        var timer = new DebugTimer('api', name);
+
+        timer.onStop((data) => {
+            this._logDebug(data);
+        });
+
+        return timer;
     }
 
 }

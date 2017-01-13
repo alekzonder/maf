@@ -9,8 +9,6 @@ var BaseApiError = require('./Error');
 
 var Chain = require(path.resolve(__dirname, '../Chain'));
 
-var DebugTimer = require(path.join(__dirname, '..', 'Debug', 'Timer'));
-
 var ApiError = BaseApiError.extendCodes({
     NO_MODEL_NAME: 'maf/Api/CrudAbstract: no model name in constructor',
     NO_MODEL: 'maf/Api/CrudAbstract: no model with name = %name%'
@@ -39,17 +37,6 @@ class ApiAbstract extends Abstract {
 
         this._systemFields = ['_id'];
 
-        this._debug = null;
-
-    }
-
-    /**
-     * set debug object
-     *
-     * @param {Request/Debug} debug
-     */
-    setDebug (debug) {
-        this._debug = debug;
     }
 
     /**
@@ -433,38 +420,6 @@ class ApiAbstract extends Abstract {
 
 
         return this._models[this._modelName];
-    }
-
-    /**
-     * emit debug data
-     *
-     * @private
-     * @param  {Object} data
-     */
-    _logDebug (data) {
-
-        if (!this._debug || !this._debug.log) {
-            return;
-        }
-
-        this._debug.log(data);
-    }
-
-    /**
-     * create debug timer
-     *
-     * @private
-     * @param  {String} name
-     * @return {DebugTimer}
-     */
-    _createTimer (name) {
-        var timer = new DebugTimer('api', name);
-
-        timer.onStop((data) => {
-            this._logDebug(data);
-        });
-
-        return timer;
     }
 
 }
