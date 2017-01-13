@@ -7,6 +7,7 @@ module.exports = {
     },
 
     globals: {
+        Proxy: false,
         Promise: false,
         describe: false,
         beforeEach: false,
