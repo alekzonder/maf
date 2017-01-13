@@ -19,6 +19,13 @@ module.exports = function (logger, di, apiClasses, createFunctions) {
 
         get: function (target, name/*, receiver*/) {
 
+            // typeof name === 'symbol'
+            if (typeof name !== 'string') {
+                return target;
+            }
+
+            name = String(name);
+
             if (['then', 'catch'].indexOf(name) > -1) {
                 return null;
             }
