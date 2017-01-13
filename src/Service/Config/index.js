@@ -100,6 +100,17 @@ class ServiceConfig {
     }
 
     /**
+     * set config variable
+     *
+     * @param {String} name
+     * @param {*} value
+     * @return {*}
+     */
+    set (name, value) {
+        return _.set(this._config, name, value);
+    }
+
+    /**
      * return full config object
      *
      * @return {Object}
