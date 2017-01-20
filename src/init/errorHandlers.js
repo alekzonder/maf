@@ -1,7 +1,7 @@
 module.exports = function (logger) {
 
     var log = function (error) {
-        if (logger.error) {
+        if (logger && typeof logger.error === 'function') {
             logger.error(error);
         } else {
             console.log(error);
