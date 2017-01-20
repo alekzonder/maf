@@ -6,6 +6,10 @@ class DebugTimer {
         this._start = new Date().getTime();
 
         this._data = {
+            timestamp: {
+                start: this._start,
+                stop: null
+            },
             time: null,
             type: null,
             name: null,
@@ -61,7 +65,10 @@ class DebugTimer {
     }
 
     stop () {
-        var msec = (new Date().getTime()) - this._start;
+        var stopTs = new Date().getTime();
+        var msec = stopTs - this._start;
+
+        this._data.timestamp.stop = stopTs;
 
         this._data.time = {
             sec: msec / 1000,
@@ -78,6 +85,11 @@ class DebugTimer {
     }
 
     error (error) {
+
+        var stopTs = new Date().getTime();
+
+        this._data.timestamp.stop = stopTs;
+
         if (error.message) {
 
             this._data.error = {
