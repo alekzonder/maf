@@ -309,7 +309,7 @@ class ApiAbstract extends Abstract {
             })
             .then(() => {
                 timer.stop();
-                var updated = _.defaultsDeep(validData, doc);
+                var updated = _.defaultsDeep(_.cloneDeep(validData), doc);
                 resolve(updated);
             })
             .catch((error) => {
@@ -378,7 +378,7 @@ class ApiAbstract extends Abstract {
             })
             .then(() => {
                 timer.stop();
-                var updated = _.defaultsDeep(validData, doc);
+                var updated = _.defaultsDeep(_.cloneDeep(validData), doc);
                 resolve(updated);
             })
             .catch((error) => {
