@@ -50,7 +50,6 @@ module.exports = function (logger, di, apiClasses, createFunctions) {
         },
 
         // has: function (target, name) {
-        //     console.log(name);
         //     if (target.apiClasses[name]) {
         //         return true;
         //     }
