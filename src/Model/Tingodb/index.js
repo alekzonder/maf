@@ -499,11 +499,11 @@ class ModelTingodb {
      */
     _logDebug (data) {
 
-        if (!this._debugger || !this._debugger.log) {
+        if (!this._debug || !this._debug.log) {
             return;
         }
 
-        this._debugger.log(data);
+        this._debug.log(data);
     }
 
     /**
