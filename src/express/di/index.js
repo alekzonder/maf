@@ -4,6 +4,8 @@ module.exports = function (logger, di, initDiFn) {
 
         if (req._debug === true) {
 
+            di.logger.trace('req._debug === true');
+
             initDiFn(di.logger, di.config, di)
                 .then((di) => {
                     req.di = di;
