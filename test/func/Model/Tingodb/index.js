@@ -410,6 +410,50 @@ describe('Model/Tingodb', function () {
                 });
         });
 
+        it('should update $set only passed data', function (done) {
+            var data = {
+                id: 1,
+                name: 'test',
+                active: false,
+                agent: null
+            };
+
+            model.insertOne(data)
+                .then((item) => {
+                    return model.update(
+                        {id: 1},
+                        {$set: {active: true}},
+                        {multi: false}
+                    );
+                })
+                .then((cnt) => {
+                    return model.findOneById(1);
+                })
+                .then((item) => {
+                    assert.equal(true, item.active);
+                    assert.equal(null, item.agent);
+                    assert.equal(1, item.id);
+                    assert.equal('test', item.name);
+
+                    return model.update(
+                        {id: 1},
+                        {$set: {agent: {status: 'up', url: 'http://localhost'}}},
+                        {multi: false}
+                    );
+                })
+                .then(() => {
+                    return model.findOneById(1);
+                })
+                .then((item) => {
+                    assert.equal(true, item.active);
+                    assert.deepEqual({status: 'up', url: 'http://localhost'}, item.agent);
+                    assert.equal(1, item.id);
+                    assert.equal('test', item.name);
+                    done();
+                })
+                .catch(done);
+        });
+
     });
 
     describe('#remove', function () {
